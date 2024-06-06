@@ -1,0 +1,83 @@
+﻿@model IEnumerable<ShopingCart.Models.Category>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Category Name</th>
+            <th>IsActive</th>
+            <th>Entry Date</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CategoryId</td>
+                <td>@item.CategoryName</td>
+                <td>@(item.IsActive ? "Active" : "Inactive")</td>
+                <td>@item.EntryDate</td>
+                
+                <td>
+                    <button class='btn btn-success' onclick='GetCategoryById(@item.CategoryId)' data-toggle="modal" data-target="#myModal">Edit</button>
+                    <button class='btn btn-danger delete-btn' data-id="" onclick="if(confirm('Are you sure you want to delete?')) { DeleteCategory(@item.CategoryId) }">Delete</button>
+
+                </td>
+               
+            </tr>
+        }
+    </tbody>
+</table>
+@* 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<table id="tbl" class="border border-5 table table-bordered" style="background:#ddddee">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>CategoryName</th>
+            <th>IsActive</th>
+            <th>EntryDate</th>
+            <th style="padding-left:70px">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function ()
+    {
+        function GetCategoryList()
+        {
+            debugger;
+            $.ajax({
+                url: '/Admin/PrtCategoryList',
+                type: 'GET',
+                success: function (res) {
+                    debugger;
+                    for (var x of res) {
+                        
+                        var isActiveText = x.isActive ? 'Active' : 'InActive';
+                        $('#tbl tbody').append(`
+                                <tr>
+                                    <td>${x.id}</td>
+                                    <td>${x.categoryName}</td>
+                                    <td>${isActiveText}</td>
+                                    <td>${x.entryDate}</td>
+                                    <td>
+                                        <button class='btn btn-success' onclick='SelectCategoryById(${x.id})' data-toggle="modal" data-target="#myModal">Edit</button>
+                                        <button class='btn btn-danger delete-btn' data-id="${x.id}">Delete</button>
+                                    </td>
+                                </tr>
+                                `);
+                    }
+                }
+            });
+
+        }
+
+
+    });
+
+</script> *@
