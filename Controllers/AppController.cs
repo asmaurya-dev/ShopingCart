@@ -59,19 +59,19 @@ namespace ShopingCart.Controllers
         }
 
        
-        //[HttpPost]
-        //public IActionResult AddOrUpdateCategory([FromBody] Category category)
-        //{
-        //    try
-        //    {
-        //        var categoryres = _hr.AddOrUpdateCategory(category);
-        //        return Ok(categoryres);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest($"An error occurred: {ex.Message}");
-        //    }
-        //}
+        [HttpPost]
+        public IActionResult AddOrUpdateCategory([FromBody] Category category)
+        {
+            try
+            {
+                var categoryres = _hr.AddOrUpdateCategory(category);
+                return Ok(categoryres);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        }
    
 
     [HttpDelete]
