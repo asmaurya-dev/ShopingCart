@@ -85,7 +85,15 @@
             $('.modal .close, .modal-footer .btn-danger').click(function () {
                 try {
                     setTimeout(function () {
-                        $('#myModal').modal('hide');
+                        $('#myModal').modal('hide').on('hidden.bs.modal', function () {
+                            $('#hdnCategoryId').val('');
+                            $('#Category').val('');
+                            $("#check").prop("checked", true);
+                            $('.modal-title').text('Add category');
+                            $("#btn").text("Submit");
+                            $('#Category').css('border', '');
+                            afterModalHidden();
+                        });
                         $('#hdnCategoryId').val('');
                         $('#Category').val('');
                         $("#check").prop("checked", true);

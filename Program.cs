@@ -16,7 +16,7 @@ namespace ShopingCart
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();          
             builder.Services.AddMvc();
             builder.Services.AddScoped<IHR, MHR>();
             var app = builder.Build();
@@ -38,7 +38,7 @@ namespace ShopingCart
             app.UseRouting();
 
             app.UseAuthorization();
-
+            
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Admin}/{action=Category}/{id?}");
