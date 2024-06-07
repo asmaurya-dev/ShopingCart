@@ -40,7 +40,8 @@ namespace ShopingCart.Controllers
         }
 
         //http://localhost:5152/api/App/GetCategoryById?CategoryID=1042
-        [HttpPost]
+        //http://localhost:5152/api/App/GetCategoryById?CategoryID=1052
+        [HttpGet]
         public IActionResult GetCategoryById(int CategoryID)
         {
             try

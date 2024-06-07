@@ -5,12 +5,17 @@ using RP_task.AppCode.MiddleLayer;
 using ShopingCart.Models;
 using System.Diagnostics;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Newtonsoft.Json;
+using System.Net;
+using System.Text;
 
 namespace ShopingCart.Controllers
 {
     public class AdminController : Controller
     {
+
         IHR _hr;
+        public static string apiBaseUrl = "http://localhost:5152/";
         private readonly IHostingEnvironment hostingEnvironment;
         public AdminController(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
 
@@ -18,22 +23,39 @@ namespace ShopingCart.Controllers
             _hr = new MHR(configuration);
             this.hostingEnvironment = hostingEnvironment;
         }
-        public IActionResult PrtCategoryList()
+
+public IActionResult PrtCategoryList()
+    {
+        try
         {
-            try
+            string apiUrl = apiBaseUrl + "api/App/CategoryList";
+
+            // Create an HttpClient instance to make the API call
+            using (HttpClient client = new HttpClient())
             {
-                IEnumerable<Category> masterCategories = _hr.GetCategoryList();
-                return PartialView(masterCategories);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("An error occurred while fetching product categories.");
+                HttpResponseMessage response = client.GetAsync(apiUrl).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResponse = response.Content.ReadAsStringAsync().Result;
+                    List<Category> masterCategories = JsonConvert.DeserializeObject<List<Category>>(jsonResponse);
+                    return PartialView(masterCategories);
+                }
+                else
+                {
+                    return BadRequest("Failed to fetch product categories. Status code: " + response.StatusCode);
+                }
             }
         }
+        catch (Exception ex)
+        {
+            return BadRequest("An error occurred while fetching product categories: " + ex.Message);
+        }
+    }
 
 
 
-        public IActionResult Category()
+
+    public IActionResult Category()
         {
             return View();
         }
@@ -42,32 +64,83 @@ namespace ShopingCart.Controllers
 
             return View();
         }
-       
-       
+
+
+      
+
         public IActionResult AddOrUpdateCategory(Category category)
         {
             try
             {
-                var categoryres = _hr.AddOrUpdateCategory(category);
-                return Json(categoryres);
+                string apiUrl = $"{apiBaseUrl}api/App/AddOrUpdateCategory";
+
+                using (HttpClient client = new HttpClient())
+                {
+                    // Convert Category object to JSON string
+                    string jsonContent = JsonConvert.SerializeObject(category);
+                    // Create StringContent with JSON
+                    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                    // Send POST request to API
+                    HttpResponseMessage response = client.PostAsync(apiUrl, content).Result;
+
+                    // Check if request is successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read response content as JSON
+                        string jsonResponse = response.Content.ReadAsStringAsync().Result;
+                        // Deserialize JSON to get response data
+                        var categoryres = JsonConvert.DeserializeObject<Response>(jsonResponse);
+                        // Return JSON response
+                        return Json(categoryres);
+                    }
+                    else
+                    {
+                        // Return error message
+                        return Json($"Failed to add or update category. Status code: {response.StatusCode}");
+                    }
+                }
             }
             catch (Exception ex)
             {
+                // Handle exceptions
                 return Json(ex.Message);
             }
-         }
+        }
         public IActionResult GetCategoryById(int CategoryID)
         {
             try
             {
-                var category = _hr.GetCategoryById(CategoryID);
-                return Json(category);
+                string apiUrl = $"{apiBaseUrl}api/App/GetCategoryById?CategoryID={CategoryID}";
+
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = client.GetAsync(apiUrl).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResponse = response.Content.ReadAsStringAsync().Result;
+                        List<Category> masterCategories = JsonConvert.DeserializeObject<List<Category>>(jsonResponse);// Corrected from SerializeObject to DeserializeObject
+                        return Json(masterCategories);
+                    }
+                    else
+                    {
+                        return BadRequest($"Failed to fetch product category with ID {CategoryID}. Status code: {response.StatusCode}");
+                    }
+                }
             }
-            catch(Exception ex)
+            catch (HttpRequestException ex)
             {
-                return Json(ex.Message);
+                // Handle HTTP request errors
+                return BadRequest($"Failed to fetch category with ID {CategoryID}. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Handle other exceptions
+                return BadRequest($"An error occurred: {ex.Message}");
             }
         }
+
+
         public IActionResult DeleteCategory(int CategoryID)
         {
             try
