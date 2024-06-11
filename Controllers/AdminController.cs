@@ -8,6 +8,9 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Newtonsoft.Json;
 using ShopingCart.AppCode.BusinessLayer;
 using System.Text;
+using System.Net.Http.Headers;
+using static System.Net.WebRequestMethods;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace ShopingCart.Controllers
 {
@@ -15,6 +18,7 @@ namespace ShopingCart.Controllers
     {
         IHR _hr;
         public static string apiBaseUrl = "http://localhost:5152/";
+        public static string apiBaseUrl1 = "https://localhost:7099/";
         private readonly IHostingEnvironment hostingEnvironment;
         public AdminController(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
 
@@ -22,18 +26,8 @@ namespace ShopingCart.Controllers
             _hr = new MHR(configuration);
             this.hostingEnvironment = hostingEnvironment;
         }
-        //public IActionResult PrtCategoryList()
-        //{
-        //    try
-        //    {
-        //        IEnumerable<Category> masterCategories = _hr.GetCategoryList();
-        //        return PartialView(masterCategories);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest("An error occurred while fetching product categories.");
-        //    }
-        //}
+
+
         public IActionResult PrtCategoryList()
         {
             // Example usage
@@ -67,18 +61,7 @@ namespace ShopingCart.Controllers
         }
 
 
-        //public IActionResult AddOrUpdateCategory(Category category)
-        //{
-        //    try
-        //    {
-        //        var categoryres = _hr.AddOrUpdateCategory(category);
-        //        return Json(categoryres);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return Json(ex.Message);
-        //    }
-        // }
+
         [HttpPost]
         public ActionResult AddOrUpdateCategory(Category masterCategory)
         {
@@ -86,7 +69,6 @@ namespace ShopingCart.Controllers
 
             try
             {
-                // Assuming masterCategory is the data object you want to send
                 string response = ApiService.ExecuteHttpRequest(HttpMethod.Post, apiUrl, masterCategory);
                 Response jsonResponse = JsonConvert.DeserializeObject<Response>(response);
                 return Json(jsonResponse);
@@ -97,18 +79,7 @@ namespace ShopingCart.Controllers
                 return Json(new { error = "An error occurred while processing your request." });
             }
         }
-        //public IActionResult GetCategoryById(int CategoryID)
-        //{
-        //    try
-        //    {
-        //        var category = _hr.GetCategoryById(CategoryID);
-        //        return Json(category);
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        return Json(ex.Message);
-        //    }
-        //}
+
         public ActionResult GetCategoryById(int categoryId)
         {
             string apiUrl = apiBaseUrl + $"api/App/GetCategoryById?CategoryID={categoryId}";
@@ -118,10 +89,7 @@ namespace ShopingCart.Controllers
                 string response = ApiService.ExecuteHttpRequest(HttpMethod.Get, apiUrl);
                 List<Category> categories = JsonConvert.DeserializeObject<List<Category>>(response);
 
-                // If you expect only one category, you can select the first item from the list
-               
 
-                // Return the first category or handle the case when there are no categories
                 return Json(categories);
             }
             catch (Exception ex)
@@ -132,19 +100,7 @@ namespace ShopingCart.Controllers
         }
 
 
-        //public IActionResult DeleteCategory(int CategoryID)
-        //{
-        //    try
-        //    {
-        //        var category = _hr.DeleteCategory(CategoryID);
-        //        return Json(category);
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        return Json(ex.Message);
-        //    }
-        //}
-      
+
         public ActionResult DeleteCategory(int categoryId)
         {
             string apiUrl = apiBaseUrl + $"api/App/DeleteCategory?CategoryID={categoryId}";
@@ -152,7 +108,7 @@ namespace ShopingCart.Controllers
             try
             {
                 string response = ApiService.ExecuteHttpRequest(HttpMethod.Delete, apiUrl);
-                var jsonResponse = JsonConvert.DeserializeObject<Response>(response);
+                var jsonResponse = JsonConvert.DeserializeObject(response);
                 return Json(jsonResponse);
             }
             catch (Exception ex)
@@ -177,32 +133,131 @@ namespace ShopingCart.Controllers
         }
         public IActionResult GetProductList()
         {
+            string apiUrl = apiBaseUrl + "api/App/GetProductList";
             try
             {
-                IEnumerable<Product> product = _hr.GetProductList();
+                // ExecuteHttpRequest is now synchronous
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Get, apiUrl);
+                List<Product> product = JsonConvert.DeserializeObject<List<Product>>(response);
+
                 return Json(product);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return Json(ex.Message);
+                Console.WriteLine("An error occurred: " + ex.Message);
+                return Json(new { error = "An error occurred while processing your request." });
             }
         }
-        [HttpPost]
-        public IActionResult Product(Product product, IFormFile file)
+        public ActionResult DeleteProduct(int ProductId)
         {
-            if (file != null && file.Length > 0)
+            string apiUrl = apiBaseUrl + $"api/App/DeleteProduct?ProductId={ProductId}";
+
+            try
             {
-                string filename = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
-                string filepath = Path.Combine(hostingEnvironment.WebRootPath, "Images", filename);
-                using (var stream = new FileStream(filepath, FileMode.Create))
-                {
-                   file.CopyTo(stream);
-                }
-                product.ProductImage=filename;
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Delete, apiUrl);
+                var jsonResponse = JsonConvert.DeserializeObject(response);
+                return Json(jsonResponse);
             }
-            var Product = _hr.AddOrUpdateProduct(product);
-            return View(Product);
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+                return Json(new { error = "An error occurred while processing your request." });
+            }
         }
+       
+        [HttpPost]
+        //     public IActionResult product([FromForm] Product product, IFormFile file)
+        //     {
+        //         string apiUrl = apiBaseUrl + "api/App/Product";
+
+        //         try
+        //         {
+        //             using (var client = new HttpClient())
+        //             {
+        //                 var formData = new MultipartFormDataContent();
+
+        //                 // Add product properties as string content with null checks
+        //                 if (product.Id != null)
+        //                     formData.Add(new StringContent(product.Id.ToString()), "id");
+        //                 if (!string.IsNullOrEmpty(product.ProductName))
+        //                     formData.Add(new StringContent(product.ProductName), "productName");
+        //                 if (product.ProductPrice != null)
+        //                     formData.Add(new StringContent(product.ProductPrice.ToString()), "productPrice");
+        //                 if (!string.IsNullOrEmpty(product.productDescription))
+        //                     formData.Add(new StringContent(product.productDescription), "productDescription");
+        //                 if (product.CategoryId != null)
+        //                     formData.Add(new StringContent(product.CategoryId.ToString()), "categoryId");
+        //                 if (!string.IsNullOrEmpty(product.CategoryName))
+        //                     formData.Add(new StringContent(product.CategoryName), "categoryName");
+        //                 if (product.IsActive != null)
+        //                     formData.Add(new StringContent(product.IsActive.ToString()), "isActive");
+
+        //                 if (file != null)
+        //                 {
+        //                     var fileStreamContent = new StreamContent(file.OpenReadStream());
+        //                     fileStreamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+        //                     {
+        //                         Name = "file",
+        //                         FileName = file.FileName
+        //                     };
+        //                     fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+        //                     formData.Add(fileStreamContent);
+        //                 }
+
+        //                 // Execute HTTP request using ApiService
+        //string responseContent = ApiService.ExecuteHttpRequestss(HttpMethod.Post, apiUrl, formData: formData);
+
+        //                 // Deserialize response JSON
+        //                 var jsonResponse = JsonConvert.DeserializeObject<Response>(responseContent);
+
+        //                 return Json(jsonResponse);
+        //             }
+        //         }
+        //         catch (Exception ex)
+        //         {
+        //             Console.WriteLine("An error occurred: " + ex.Message);
+        //             return StatusCode(500, new { error = "An error occurred while processing your request." });
+        //         }
+        //     }
+        public IActionResult Product([FromForm] Product product, IFormFile file)
+        {
+            try
+            {
+                var formData = new MultipartFormDataContent();
+
+                AddIfNotNull(formData, "id", product.Id);
+                AddIfNotNull(formData, "productName", product.ProductName);
+                AddIfNotNull(formData, "productPrice", product.ProductPrice);
+                AddIfNotNull(formData, "productDescription", product.productDescription);
+                AddIfNotNull(formData, "categoryId", product.CategoryId);
+                AddIfNotNull(formData, "categoryName", product.CategoryName);
+                AddIfNotNull(formData, "isActive", product.IsActive);
+
+                if (file != null)
+                {
+                    formData.Add(new StreamContent(file.OpenReadStream()), "file", file.FileName);
+                }
+
+                var jsonResponse = JsonConvert.DeserializeObject<Response>(ApiService.ExecuteHttpRequestss(HttpMethod.Post, apiBaseUrl + "api/App/Product", formData: formData));
+
+                return Json(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+                return StatusCode(500, new { error = "An error occurred while processing your request." });
+            }
+        }
+
+        private void AddIfNotNull(MultipartFormDataContent formData, string key, object value)
+        {
+            if (value != null)
+            {
+                formData.Add(new StringContent(value.ToString()), key);
+            }
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
@@ -211,208 +266,3 @@ namespace ShopingCart.Controllers
         }
     }
 }
-//using Microsoft.AspNetCore.Mvc;
-//using System.IO;
-//using RP_task.AppCode.Interface;
-//using RP_task.AppCode.MiddleLayer;
-//using ShopingCart.Models;
-//using System.Diagnostics;
-//using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
-//using Newtonsoft.Json;
-//using System.Net;
-//using System.Text;
-
-//namespace ShopingCart.Controllers
-//{
-//    public class AdminController : Controller
-//    {
-
-//        IHR _hr;
-//        public static string apiBaseUrl = "http://localhost:5152/";
-//        private readonly IHostingEnvironment hostingEnvironment;
-//        public AdminController(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
-
-//        {
-//            _hr = new MHR(configuration);
-//            this.hostingEnvironment = hostingEnvironment;
-//        }
-
-//        public IActionResult PrtCategoryList()
-//        {
-//            try
-//            {
-//                string apiUrl = apiBaseUrl + "api/App/CategoryList";
-
-//                // Create an HttpClient instance to make the API call
-//                using (HttpClient client = new HttpClient())
-//                {
-//                    HttpResponseMessage response = client.GetAsync(apiUrl).Result;
-//                    if (response.IsSuccessStatusCode)
-//                    {
-//                        string jsonResponse = response.Content.ReadAsStringAsync().Result;
-//                        List<Category> masterCategories = JsonConvert.DeserializeObject<List<Category>>(jsonResponse);
-//                        return PartialView(masterCategories);
-//                    }
-//                    else
-//                    {
-//                        return BadRequest("Failed to fetch product categories. Status code: " + response.StatusCode);
-//                    }
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                return BadRequest("An error occurred while fetching product categories: " + ex.Message);
-//            }
-//        }
-
-
-
-
-//        public IActionResult Category()
-//        {
-//            return View();
-//        }
-//        public IActionResult Product()
-//        {
-
-//            return View();
-//        }
-
-
-
-
-//        public IActionResult AddOrUpdateCategory(Category category)
-//        {
-//            try
-//            {
-//                string apiUrl = $"{apiBaseUrl}api/App/AddOrUpdateCategory";
-
-//                using (HttpClient client = new HttpClient())
-//                {
-//                    // Convert Category object to JSON string
-//                    string jsonContent = JsonConvert.SerializeObject(category);
-//                    // Create StringContent with JSON
-//                    var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
-//                    // Send POST request to API
-//                    HttpResponseMessage response = client.PostAsync(apiUrl, content).Result;
-
-//                    // Check if request is successful
-//                    if (response.IsSuccessStatusCode)
-//                    {
-//                        // Read response content as JSON
-//                        string jsonResponse = response.Content.ReadAsStringAsync().Result;
-//                        // Deserialize JSON to get response data
-//                        var categoryres = JsonConvert.DeserializeObject<Response>(jsonResponse);
-//                        // Return JSON response
-//                        return Json(categoryres);
-//                    }
-//                    else
-//                    {
-//                        // Return error message
-//                        return Json($"Failed to add or update category. Status code: {response.StatusCode}");
-//                    }
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                // Handle exceptions
-//                return Json(ex.Message);
-//            }
-//        }
-//        public IActionResult GetCategoryById(int CategoryID)
-//        {
-//            try
-//            {
-//                string apiUrl = $"{apiBaseUrl}api/App/GetCategoryById?CategoryID={CategoryID}";
-
-//                using (HttpClient client = new HttpClient())
-//                {
-//                    HttpResponseMessage response = client.GetAsync(apiUrl).Result;
-//                    if (response.IsSuccessStatusCode)
-//                    {
-//                        string jsonResponse = response.Content.ReadAsStringAsync().Result;
-//                        List<Category> masterCategories = JsonConvert.DeserializeObject<List<Category>>(jsonResponse);// Corrected from SerializeObject to DeserializeObject
-//                        return Json(masterCategories);
-//                    }
-//                    else
-//                    {
-//                        return BadRequest($"Failed to fetch product category with ID {CategoryID}. Status code: {response.StatusCode}");
-//                    }
-//                }
-//            }
-//            catch (HttpRequestException ex)
-//            {
-//                // Handle HTTP request errors
-//                return BadRequest($"Failed to fetch category with ID {CategoryID}. Error: {ex.Message}");
-//            }
-//            catch (Exception ex)
-//            {
-//                // Handle other exceptions
-//                return BadRequest($"An error occurred: {ex.Message}");
-//            }
-//        }
-
-
-//        public IActionResult DeleteCategory(int CategoryID)
-//        {
-//            try
-//            {
-//                var category = _hr.DeleteCategory(CategoryID);
-//                return Json(category);
-//            }
-//            catch (Exception ex)
-//            {
-//                return Json(ex.Message);
-//            }
-//        }
-
-
-//        public IActionResult CategoryListForDropdown()
-//        {
-//            try
-//            {
-//                IEnumerable<Category> category = _hr.CategoryListForDropdown();
-//                return Json(category);
-//            }
-//            catch (Exception ex)
-//            {
-//                return Json(ex.Message);
-//            }
-//        }
-//        public IActionResult GetProductList()
-//        {
-//            try
-//            {
-//                IEnumerable<Product> product = _hr.GetProductList();
-//                return Json(product);
-//            }
-//            catch (Exception ex)
-//            {
-//                return Json(ex.Message);
-//            }
-//        }
-//        [HttpPost]
-//        public IActionResult Product(Product product, IFormFile file)
-//        {
-//            if (file != null && file.Length > 0)
-//            {
-//                string filename = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
-//                string filepath = Path.Combine(hostingEnvironment.WebRootPath, "Images", filename);
-//                using (var stream = new FileStream(filepath, FileMode.Create))
-//                {
-//                    file.CopyTo(stream);
-//                }
-//                product.ProductImage = filename;
-//            }
-//            var Product = _hr.AddOrUpdateProduct(product);
-//            return View(Product);
-//        }
-
-//        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-//        public IActionResult Error()
-//        {
-//            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-//        }
-//    }
-//}

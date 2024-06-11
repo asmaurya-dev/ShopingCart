@@ -62,9 +62,6 @@
                             <img id="blah" src="#" height="50" width="80" alt="your image" />
                         </div>
                        
-                       
-                      
-
                         <button type="submit" class="btn btn-primary">Add Product</button>
                        
                     </form>
@@ -76,9 +73,11 @@
     <table id="tbl" class="border border-5 table table-bordered" style="background:#ddddee">
         <thead>
             <tr>
+
+                <th>ProductId</th>
                 <th>ProductName</th>
                 <th>ProductPrice</th>
-                <th>ProductDesc</th>
+              
                 <th>CategoryId</th>
                 <th>IsActive</th>
                 <th>EntryDate</th>
@@ -119,21 +118,19 @@
                     debugger;
                     for (var x of res) {
                         $('#tbl tbody').append(`<tr>
-                      
-                                                <td>${x.productName}</td>
-        <td>${x.productDescription}</td>
-                <td>${x._ProductImage}</td>
+                               <td>${x.id}</td>
+                                 <td>${x.productName}</td>
+                                  <td>${x.productPrice}</td>
+                                 
+                                            <td>${x.categoryId}</td>
                                         <td>${x.isActive}</td>
                                                 <td>${x.entryDate}</td>
-                                             
-
-                                               <td>${x.productImage}</td>
+                                                    <td> <img src="/Images/${x.productImage}" /></td>
                                                           <td>${x.categoryName}</td>
-                                              
-                                               <td>${x.productImage}</td>
-                                             <td>
+                                               <td>
                                             <button class='btn btn-success'  data-toggle="modal" data-target="#myModal">Update</button>
-                                            <button class='btn btn-danger' >Delete</button>
+                                                                  <button class='btn btn-danger delete-btn' data-id="" onclick="if(confirm('Are you sure you want to delete?')) { DeleteProduct(${x.id}) }">Delete</button>
+
                                         </td>
                                     </tr>`);
 
@@ -159,45 +156,31 @@
 
             })
         }
-        // function AddAndUpdateProduct()
-        // {
-        //     var categoryName = document.getElementById("cat_Id").value;
-        //     var productName = document.getElementById("product_name").value;
-        //     var productPrice = document.getElementById("product_price").value;
-        //     var productDescription = document.getElementById("product_description").value;
-        //     var isActive = document.getElementById("isactive").checked;
-        //     var productImage = document.getElementById("product_Image").files[0];
-        //     var obj = {
-        //         ProductName: productName,
-        //         ProductImage: productImage,
-        //         ProductPrice: productPrice,
-        //         ProductDescription: productDescription,
-        //         IsActive: isActive,
-        //         CategoryId: categoryName
-        //     };
 
-        //     $.ajax({
-        //         url: '/Admin/AddOrUpdateProduct',
-        //         type: 'POST',
-        //         data: obj,
-        //         success: function (res) {
-        //             debugger;
-                   
-        //             Swal.fire({
-        //                 icon: "success",
-        //                 title: res,
-        //                 text: 'Thank you',
-        //                 timer: 5000,
-        //                 showConfirmButton: true,
-        //                 showCloseButton: true,
-        //                 showCancelButton: true,
-        //                 timerProgressBar: true
-        //             });
-        //             getAllCategory();
-        //         }
-        //     });
-        // }
-      
+        function DeleteProduct(ProductId) {
+            try {
+                $.ajax({
+                    url: '/Admin/DeleteProduct',
+                    type: 'GET',
+                    data: { ProductId: ProductId },
+                    success: function (res) {
+                        Swal.fire({
+                            icon: "success",
+                            title: 'Data Deleted Successfully',
+                            text: 'Thank you',
+                            timer: 5000,
+                            showConfirmButton: true,
+                            showCloseButton: true,
+                            showCancelButton: true,
+                            timerProgressBar: true
+                        });
+                        GetCategoryList();
+                    }
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
     </script>
 
 </body>

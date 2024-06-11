@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting.Internal;
 using RP_task.AppCode.Interface;
 using RP_task.AppCode.MiddleLayer;
 using ShopingCart.Models;
@@ -21,6 +22,8 @@ namespace ShopingCart.Controllers
             _hr = new MHR(configuration);
             _hostingEnvironment = hostingEnvironment;
         }
+        #region CATEGORY 
+    
 
         //http://localhost:5152/api/App/CategoryList
         [HttpGet]
@@ -91,17 +94,6 @@ namespace ShopingCart.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
         ////http://localhost:5152/api/App/AddOrUpdateCategory
         //[HttpPost("AddOrUpdateCategory/{CategoryName},{IsActive},{CategoryId}")]
         //public IActionResult AddOrUpdateCategory(string CategoryName, bool IsActive, int CategoryId)
@@ -118,11 +110,59 @@ namespace ShopingCart.Controllers
         //}
         //http://localhost:5152/api/App/AddOrUpdateCategory
         // {
-//    "CategoryId": 0,
-//    "CategoryName": "Electron",
-//    "IsActive": true
-//}
-//Body:Json
-}
+        //    "CategoryId": 0,
+        //    "CategoryName": "Electron",
+        //    "IsActive": true
+        //}
+        //Body:Json
+        #endregion
+        #region PRODUCT
+        [HttpGet]
+        //  //http://localhost:5152/api/App/GetProductList
+        public IActionResult GetProductList()
+        {
+            try
+            {
+                IEnumerable<Product> product = _hr.GetProductList();
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
+            }
+        }
+        [HttpDelete]
+        //http://localhost:5152/api/App/DeleteProduct?ProductId=1042
+        public IActionResult DeleteProduct(int ProductId)
+        {
+            try
+            {
+                var category = _hr.DeleteProduct(ProductId);
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Product([FromForm] Product product, IFormFile file)
+        {
+            if (file != null && file.Length > 0)
+            {
+                string filename = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
+                string filepath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", filename);
+                using (var stream = new FileStream(filepath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+                product.ProductImage = filename;
+            }
+            var Product = _hr.AddOrUpdateProduct(product);
+            return Ok(Product);
+        }
+        #endregion
+    }
 
 }

@@ -262,3 +262,126 @@
 
 </script>
 </body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* 
+                 //public IActionResult GetProductList()
+        //{
+        //    try
+        //    {
+        //        IEnumerable<Product>
+    product = _hr.GetProductList();
+    //        return Json(product);
+    //    }
+    //    catch(Exception ex)
+    //    {
+    //        return Json(ex.Message);
+    //    }
+    //}
+    //[HttpPost]
+    //public IActionResult Product(Product product, IFormFile file)
+    //{
+    //    if (file != null && file.Length > 0)
+    //    {
+    //        string filename = Guid.NewGuid().ToString() + "_" + Path.GetFileName(file.FileName);
+    //        string filepath = Path.Combine(hostingEnvironment.WebRootPath, "Images", filename);
+    //        using (var stream = new FileStream(filepath, FileMode.Create))
+    //        {
+    //           file.CopyTo(stream);
+    //        }
+    //        product.ProductImage=filename;
+    //    }
+    //    var Product = _hr.AddOrUpdateProduct(product);
+    //    return View(Product);
+
+    // In your Product action
+    //[HttpPost]
+
+    //public async Task<IActionResult>
+        Product( Product product, IFormFile file) // Use [FromBody] for JSON data
+        //{
+        //    try
+        //    {
+        //        if (product == null) // Check if product is null
+        //        {
+        //            return BadRequest("Missing product data in request body.");
+        //        }
+
+        //        string responseContent;
+        //        using (var fileStream = file != null ? file.OpenReadStream() : null)
+        //        {
+        //            responseContent = await ShopingCart.Utility.ExecuteHttpRequests(
+        //                HttpMethod.Post,
+        //                "http://localhost:5152/api/App/Product",
+        //                product,
+        //                fileStream,
+        //                file?.FileName);
+        //        }
+
+        //        // Deserialize response JSON (assuming the response is JSON)
+        //        var jsonResponse = JsonConvert.DeserializeObject<Response>
+            (responseContent);
+
+            //        return Json(jsonResponse);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Console.WriteLine(ex.Message);
+            //        return StatusCode(500, "An error occurred while processing your request.");
+            //    }
+            //}
+            //[HttpPost]
+            //[HttpPost]
+            //public IActionResult Product(Product product, IFormFile file)
+            //{
+            //    try
+            //    {
+
+
+            //        string responseContent;
+            //        using (var fileStream = file?.OpenReadStream())
+            //        {
+            //            responseContent = Utility.ExecuteHttpRequests("http://localhost:5152/api/App/Product", product, file);
+            //        }
+
+            //        // Handle the response as needed
+            //        // For example, deserialize the response JSON if it's JSON
+            //        var jsonResponse = JsonConvert.DeserializeObject<Response>
+                (responseContent);
+
+                //        return Json(jsonResponse);
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        Console.WriteLine(ex.Message);
+                //        return StatusCode(500, "An error occurred while processing your request.");
+                //    }
+                //} *@

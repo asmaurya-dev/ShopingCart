@@ -15,7 +15,7 @@ namespace RP_task.AppCode.Interface
         //public object UpdateCategory(int CategoryId, string CategoryName, bool IsActive);
         public IEnumerable<Category> CategoryListForDropdown();
         public object AddOrUpdateProduct(Product product);
-
+        public object DeleteProduct(int ProductId);
 
     }
 

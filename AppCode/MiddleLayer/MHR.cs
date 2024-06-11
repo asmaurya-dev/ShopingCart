@@ -86,9 +86,11 @@ namespace RP_task.AppCode.MiddleLayer
             {
                 Product product = new Product();
                 product.Id = Convert.ToInt32(dr["_ID"]);
-                product.ProductDescription = dr["_ProductDesc"].ToString();
+                product.productDescription = dr["_ProductDesc"].ToString();
                 product.ProductPrice = Convert.ToInt32(dr["_ProductPrice"]);
+                product.CategoryId = Convert.ToInt32(dr["_CategoryId"]);
                 product.ProductName = dr["_ProductName"].ToString();
+                product.ProductImage = dr["_ProductImage"].ToString();
       
                 product.CategoryName = dr["_CategoryName"].ToString();
                 product.IsActive = Convert.ToBoolean(dr["_IsActive"]);
@@ -121,7 +123,7 @@ namespace RP_task.AppCode.MiddleLayer
         new SqlParameter("@CategoryId", product.CategoryId),
         new SqlParameter("@IsActive", product.IsActive),
         new SqlParameter("@ProductPrice", product.ProductPrice),
-        new SqlParameter("@ProductDesc", product.ProductDescription),
+        new SqlParameter("@ProductDesc", product.productDescription),
         new SqlParameter("@ProductImage", product.ProductImage),
         new SqlParameter("@productId", product.Id)
             });
@@ -131,7 +133,15 @@ namespace RP_task.AppCode.MiddleLayer
             return data;
         }
 
+        public object DeleteProduct(int ProductId)
+        {
+            object data = _blhr.ExecuteScalar("Proc_DeleteProduct", new SqlParameter[]
+             {
+                new SqlParameter("@ProductId",ProductId),
 
+             });
+            return data;
+        }
 
     }
 
