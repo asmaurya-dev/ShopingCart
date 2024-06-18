@@ -41,9 +41,7 @@ namespace ShopingCart.AppCode.BusinessLayer
                 }
             }
         }
-       
-       
-            public static string ExecuteHttpRequestss(HttpMethod method, string apiUrl, object data = null, MultipartFormDataContent formData = null)
+       public static string ExecuteHttpRequestss(HttpMethod method,string apiUrl,object data = null,MultipartFormDataContent formData = null)
             {
                 using (HttpClientHandler handler = new HttpClientHandler())
                 {
@@ -54,7 +52,6 @@ namespace ShopingCart.AppCode.BusinessLayer
                         try
                         {
                             HttpRequestMessage request = new HttpRequestMessage(method, apiUrl);
-
                             if (formData != null)
                             {
                                 request.Content = formData;
@@ -64,9 +61,7 @@ namespace ShopingCart.AppCode.BusinessLayer
                                 string jsonData = JsonConvert.SerializeObject(data);
                                 request.Content = new StringContent(jsonData, Encoding.UTF8, "application/json");
                             }
-
                             HttpResponseMessage response = client.SendAsync(request).Result;
-
                             if (response.IsSuccessStatusCode)
                             {
                                 return response.Content.ReadAsStringAsync().Result;

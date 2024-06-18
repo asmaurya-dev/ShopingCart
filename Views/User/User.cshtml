@@ -1,0 +1,122 @@
+﻿@{
+    ViewData["Title"] = "Users";
+}
+<!-- jQuery 3.x -->
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .a {
+        background: #f8fcf8;
+        min-height: 600px;
+        width: 500px;
+        margin: 10px auto;
+border-radius:10px;
+    }
+
+    
+</style>
+</style>
+
+<form id="userForm" method="post">
+    <div class="container">
+        <div class="row a">
+            <div class="col-sm-12 my-3">
+                <h3>Register Here....</h3><hr />
+                <div class="form-group">
+                    <label for="User">User Name</label>
+                    <input type="text" id="name" class="form-control" name="Name" placeholder="Enter the your name" />
+                    <span id="msgspan"></span><br />
+                </div>
+                <div class="form-group">
+                    <label for="Email">Email</label>
+                    <input type="email" id="emailid" class="form-control my-2" name="Email" placeholder="Enter your email  is  abc@gmail.com" />
+                    <span id="emailmsg"></span><br />
+                </div>
+                <div class="form-group">
+                    <label for="number">Mobile no</label>
+                    <input type="text" id="phone" class="form-control my-2" name="Phone" placeholder="Enter your mobile no" />
+                    <span id="nummsg"></span><br />
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea class="form-control my-2" id="address" name="Address"></textarea>
+                    <span id="addmsg"></span><br />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="text"  id="password" class="form-control my-2" name="Password" placeholder="Enter your password" />
+                    <span></span><br />
+                </div>
+                <div class="form-group">
+                    <label for="cpassword">Confirm Password</label>
+                    <input type="password" id="cpasword" class="form-control my-2" name="Cpassword" placeholder="Enter your confirm password" />
+                    <span id="msgcpass"></span><br />
+               
+                </div>
+                <div class="form-group">
+                    <label for="check">IsActive</label>
+                    <input type="checkbox" id="isactive" checked name="IsActive" />
+                </div>
+                <button  type="submit" class="btn btn-success" id="btn" />Submit</button>
+            </div>
+        </div>
+     </div>
+   </form>
+<script src="~/js/uservalidation.js"></script>
+<script>
+  
+    document.getElementById("phone").addEventListener("keypress", function (event) {
+        var price = document.getElementById("phone").value;
+        var charCode = event.which ? event.which : event.keyCode;
+
+        // Allow only numeric characters and backspace
+        if ((charCode < 48 || charCode > 57) && charCode !== 8) {
+            event.preventDefault();
+        }
+        if (price.length >= 10) {
+            event.preventDefault();
+        }
+
+    });
+document.getElementById("password").addEventListener("keypress", function (event) {
+    var price = document.getElementById("password").value;
+    var charCode = event.which ? event.which : event.keyCode;
+    var charStr = String.fromCharCode(charCode);
+
+  
+    if (!((charCode >= 48 && charCode <= 57) || 
+          (charCode >= 65 && charCode <= 90) || 
+          (charCode >= 97 && charCode <= 122) || 
+          charCode === 64 || 
+          charCode === 8)) { 
+        event.preventDefault();
+    }
+    if (price.length >= 10) {
+        event.preventDefault();
+    }
+});
+    document.getElementById("cpasword").addEventListener("keypress", function (event) {
+        var price = document.getElementById("cpasword").value;
+        var charCode = event.which ? event.which : event.keyCode;
+        var charStr = String.fromCharCode(charCode);
+
+
+        if (!((charCode >= 48 && charCode <= 57) ||
+            (charCode >= 65 && charCode <= 90) ||
+            (charCode >= 97 && charCode <= 122) ||
+            charCode === 64 ||
+            charCode === 8)) {
+            event.preventDefault();
+        }
+        if (price.length >= 10) {
+            event.preventDefault();
+        }
+    });
+
+  
+
+</script>

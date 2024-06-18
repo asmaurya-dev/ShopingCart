@@ -12,6 +12,13 @@
     {
         public int Status { get; set; }
         public string Message { get; set; }
+        public string Name { get; set; }
+        
+        public Response()
+        {
+            Status = -1;
+            Message = "some error occured";
+        }
     }
 }
 

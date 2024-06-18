@@ -13,7 +13,7 @@
             public DateTime? EntryDate { get; set; }
             public string?  ProductImage { get; set; }
         public string? ProductImag { get; set; }
-            public string? CategoryName { get; set; }
+            public string?   CategoryName { get; set; }
            
 
 

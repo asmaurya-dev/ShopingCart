@@ -1,0 +1,123 @@
+﻿@model IEnumerable<ShopingCart.Models.User>
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    #tblEmployee tr:nth-child(even) {
+        background-color: black;
+    }
+
+    #tblEmployee, th, td {
+        border: 1px solid white;
+    }
+
+        #tblEmployee tr:hover {
+            background-color: deeppink;
+        }
+
+    body {
+        background: black;
+    }
+
+    .a {
+        background: white;
+        height: 1030px;
+        width: 500px;
+        margin: 100px auto;
+    }
+
+    input[type=text], input[type=number], input[type=date], input[type=email], select {
+        border: 2px solid black !important;
+    }
+
+    input[type=submit] {
+        color: white;
+    }
+
+</style>
+<table class="border border-5 table table-bordered " style="background:#ddddee">
+    <thead>
+        <tr>
+            <th>User Id</th>
+            <th>User name</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Phone No</th>
+            <th>IsActive</th>
+            <th>Address</th>
+            <th>Entry Date</th>
+<th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+            @foreach(var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>@item.Email</td>
+                <td>@item.Password</td>
+                <td>@item.Phone</td>
+                <td>@(item.IsActive == true ? "Active" : "InActive")</td>
+                <td>@item.Address</td>
+                <td>@item.EntryDate</td>
+                <td>
+                    <label class="switch">
+                        <input type="checkbox" id="checkbox_" @(item.IsActive==true ? "checked" :"" ) onclick="if(confirm('Are u sure want to change the status'))modifystatus(@item.Id)">
+                        <span class="slider"></span>
+                    </label>
+                </td>
+            </tr>
+            }
+     
+    </tbody>
+</table>

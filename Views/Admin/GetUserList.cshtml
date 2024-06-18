@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewData["Title"] = "GetUserList";
+
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+
+<div id="GetUserList"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+
+<script>
+$(document).ready(function(){
+       GetUserList()
+})
+    function GetUserList()
+    {
+        $.ajax({
+            url: "/admin/PrtUserList",
+            type: "GET",
+            success: function (response) 
+            {
+                debugger;
+                $("#GetUserList").html(response)
+            },
+
+        });
+    }
+    function modifystatus(_this) {
+
+        $.ajax({
+            url: '/Admin/updateUserStatus',
+            type: 'POST',
+            data: { 'userId': _this },
+            success: function (res) {
+                GetUserList()
+            },
+            error: function () {
+                alert('Failed to change status');
+            }
+        });
+    }
+    </script>

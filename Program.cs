@@ -1,5 +1,6 @@
 using RP_task.AppCode.Interface;
 using RP_task.AppCode.MiddleLayer;
+using ShopingCart.Models;
 
 namespace ShopingCart
 {
@@ -10,15 +11,19 @@ namespace ShopingCart
             public void configureServices(IServiceCollection services)
             {
                 services.AddTransient<IHR, MHR>();
+                services.AddScoped<EmailService>();
             }
 
         }
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();          
+            builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();  
+            builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             builder.Services.AddMvc();
             builder.Services.AddScoped<IHR, MHR>();
+            builder.Services.AddSession();
+
             var app = builder.Build();
             // Add services to the container.
             
@@ -34,14 +39,14 @@ namespace ShopingCart
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession(); 
             app.UseRouting();
 
             app.UseAuthorization();
             
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Admin}/{action=Category}/{id?}");
+                pattern: "{controller=User}/{action=Login}/{id?}");
 
             app.Run();
         }
