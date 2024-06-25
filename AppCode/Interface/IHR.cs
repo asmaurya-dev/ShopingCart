@@ -23,6 +23,12 @@ namespace RP_task.AppCode.Interface
         public Response EmailVeryfy(string email);
         public List<Product> GetProductForDropdown(int categoryid);
         public object ChangePassword(User user);
+        public List<User> MyProfile(string email);
+        public Response UpdateProfile( User users);
+        public IEnumerable<Category> GetCategoryListUseInProduct();
+        public object AddtblCart(Cartlist cart);
+        public Response FinalOrder();
+        public IEnumerable<OrderMaster> OrderMastersListForOrderReport(OrderMaster order);
     }
 
 }

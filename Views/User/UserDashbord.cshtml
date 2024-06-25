@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿
+
+@{
+    Layout = "~/Views/Shared/UserLayout.cshtml";
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +13,15 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <style>
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .selected-product-item {
+            margin-left: 6px;
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -25,77 +39,487 @@
         h2 {
             margin-bottom: 20px;
         }
+
+        .selected-product-item {
+            margin-bottom: 5px;
+        }
+
+            .selected-product-item button {
+                margin-left: 5px;
+            }
+
+        #cartIcon {
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+            #cartIcon span {
+                margin-left: 5px;
+                font-size: 20px;
+            }
+
+        #cartCount {
+            background-color: #007bff;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 50%;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>Product and Category Selection</h2>
+    <div class="container" id="selectProduct">
+        <h2>Product and Category </h2>
         <div class="row">
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="categorySelect">Select Category:</label>
                     <select id="category" class="form-control" name="CategoryId" onchange="ProductListForDropdown()">
                     </select>
-
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="productSelect">Select Product:</label>
-                    <select class="form-control" id="product" name="Product">
+                    <select class="form-control" style="border-bottom:1px solid black;border:1px solid black;" id="product" name="Product" multiple>
                     </select>
+                    <label for="productSelect" class="form-control" style="border-left:1px solid black;border-right:1px solid black;border-bottom:1px solid black" id="selectedProductsList"></label>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS and dependencies (optional for select2 plugin) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <div class="container mt-3" style="display:none" id="gridview1">
+        <div id="selectedProductsContainer">
+            <h3 style="display:none">Selected Products:</h3>
 
+        </div>
+
+        <div id="GridViewContainer">
+            <span>
+                Selected Products in Grid View:<span style="float:right">
+                    <div id="cartIcon" class="float-end">
+                        <span><i class="fas fa-shopping-cart"></i></span>
+                        <span id="cartCount">0</span>
+                    </div>
+            </span></span>
+            <table class='table table-striped'>
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Product Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id='GridViewBody'></tbody>
+            </table>
+        </div>
+        <p>
+            <button id="nextButton" class="btn btn-success mx-auto" style="float:right">Next =></button>
+            <label>Proceed to Next</label>
+        </p>
+    </div>
+    <div class="container mt-3" id="newGridForm" style="display: none;">
+        <h3>New Grid View</h3>
+        <table class='table table-striped'>
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Product Price</th>
+                    <th id="totalPriceInput">Total Price</th>
+                </tr>
+            </thead>
+            <tbody id='NewGridViewBody'></tbody>
+
+        </table>
+        <lable>
+            <strong>Total Price:</strong> $
+            <span id="totalPrice">0.00</span>
+            <button class="btn btn-success float-end" id="Submit">Buy Now</button>
+           
+        </lable>
+    </div>
+    <!-- Order summary grid -->
+    <div id="ordergrid" style="display: none;">
+        <h2>Order Summary</h2>
+        <table id="orderBody" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th id="totalPriceInput">Total Price</th>
+                </tr>
+            </thead>    
+            <tbody>
+                <!-- Dynamically populated rows will go here -->
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-sm-8"></div>
+            <div class="col-sm-4">
+                <button class="btn btn-success" id="orderNow">Order Now</button>
+            </div>
+        </div>
+    </div>
+
+
+  
+    <h1 style="display:none" id="hh11">@ViewBag.Username</h1>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Mobiscroll JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@@mobiscroll/core/js/mobiscroll.min.js"></script>
+    <!-- Script -->
+    <script>
+        $(document).ready(function () {
+            CategoryListForDropdown();
+        });
+
+        function CategoryListForDropdown() {
+            $.ajax({
+                url: '/user/CategoryListForDropdown',
+                type: 'GET',
+                success: function (res) {
+                    if (res.length > 0) {
+                        for (var row of res) {
+                            $("#category").append(`<option value="${row.categoryId}">${row.categoryName}</option>`);
+                        }
+                        $("#category").val($("#category option:first").val());
+                        ProductListForDropdown();
+                    }
+                }
+            });
+        }
+
+        function ProductListForDropdown() {
+            var categoryid = $("#category").val();
+            $.ajax({
+                url: '/user/productListForBinds',
+                type: 'GET',
+                data: { categoryid: categoryid },
+                success: function (res) {
+                    $("#product").empty(); // Clear the existing options
+                    if (res.length > 0) {
+                        var uniqueProducts = new Set();
+                        // Get all selected product IDs
+                        var selectedProducts = $('#product').val() || [];
+
+                        // Populate product dropdown excluding selected products
+                        for (var item of res) {
+                            if (!selectedProducts.includes(item.id.toString())) {
+                                $("#product").append(`<option value='${item.id}' data-price='${item.productPrice}'> ${item.productName} </option>`);
+                                uniqueProducts.add(item.id);
+                            }
+                        }
+                    } else {
+                        $("#product").html("<option>No products available</option>");
+                    }
+                }
+            });
+        }
+
+        $('#product').change(function () {
+            var selectedProducts = $(this).val() || []; // Handle null case
+            updateSelectedProductsList(selectedProducts);
+        });
+        // Function to update selected products list
+        function updateSelectedProductsList(selectedProducts) {
+            // Clear counter before counting again
+            $('#counter').text(0);
+
+            selectedProducts.forEach(productId => {
+                // Check if product already exists in GridView
+                if ($('#productRow_' + productId).length === 0) {
+                    var selectedProduct = $('#product option[value="' + productId + '"]').text();
+                    var listItemHtml = `<div class="selected-product-item bg-Info" style="font-size:15px;float:left;font-weight:bold" data-product-id="${productId}">${selectedProduct}<button style="font-size:15px;border:2px solid black" class="bg-info" onclick="confirmRemove(${productId})">&times;</button></div>`;
+                    $('#selectedProductsList').append(listItemHtml);
+
+                    // Add to GridView
+                    var productDetails = $('#product option[value="' + productId + '"]');
+                    var productName = productDetails.text();
+                    var productPrice = productDetails.data('price');
+
+                    var rowHtml = `<tr id="productRow_${productId}">`;
+                    rowHtml += `<td>${productName}</td>`;
+                    rowHtml += `<td>${productPrice}</td>`;
+                    rowHtml += `<td><button class="btn btn-danger" onclick="deleteProduct(${productId})">Delete</button></td>`;
+                    rowHtml += `</tr>`;
+                    $('#GridViewBody').append(rowHtml);
+                    var currentCount = parseInt($('#cartCount').text());
+                    $('#cartCount').text(currentCount + 1);
+                }
+            });
+
+            var selectedCount = $('#GridViewBody').find('tr').length;
+            
+            $('#counter').val(selectedCount);
+
+            $('#gridview1').show();
+            checkGridView();
+        }
+        function confirmRemove(productId) {
+            if (confirm("Are you sure you want to delete item in product gridView?")) {
+                // Call your remove function here
+                removeSelectedProduct(productId);
+            }
+        }
+
+        function removeSelectedProduct(productId) {
+            // Your remove logic here
+            // For example:
+            $(`.selected-product-item[data-product-id="${productId}"]`).remove();
+        }
+        function removeSelectedProduct(productId) {
+
+            $('#selectedProductsList').find(`div[data-product-id="${productId}"]`).remove();
+
+            $(`#productRow_${productId}`).remove();
+
+            $('#product option[value="' + productId + '"]').prop('selected', false);
+
+            checkGridView();
+            var currentCount = parseInt($('#cartCount').text());
+            $('#cartCount').text(currentCount - 1);
+        }
+
+        // Function to delete product from GridView
+        function deleteProduct(productId) {
+            // Remove from GridView
+            $('#productRow_' + productId).remove();
+
+            // Remove from selected products list
+            $('div.selected-product-item[data-product-id="' + productId + '"]').remove();
+            $('#product option[value="' + productId + '"]').prop('selected', false);
+            // Update counter
+            var selectedCount = $('#GridViewBody').find('tr').length;
+            $('#counter').text(selectedCount);
+
+            // Optionally, hide GridView if no items are left
+            if (selectedCount === 0) {
+                $('#gridview1').hide();
+            }
+
+            // Optionally, call checkGridView() if needed
+            // checkGridView();
+        }
+
+
+        function checkGridView() {
+            var visibleRows = $('#GridViewBody').find('tr').length;
+            if (visibleRows === 0) {
+                $('#gridview1').hide(); // Hide GridView container if no rows
+                $('#addToCart').hide(); // Also hide "Add to Cart" button
+            } else {
+                $('#gridview1').show(); // Show GridView container if there are rows
+                $('#addToCart').show(); // Show "Add to Cart" button
+            }
+        }
+
+        ProductListForDropdown();
+
+        $("#category").change(function () {
+            ProductListForDropdown(); 
+        });
+
+        $(document).ready(function () {
+            $('#nextButton').click(function () {
+                $('#NewGridViewBody').empty();
+                var totalPrice = 0;
+
+                $('#GridViewBody').find('tr').each(function () {
+                    var productName = $(this).find('td:eq(0)').text();
+                    var productPrice = parseFloat($(this).find('td:eq(1)').text());
+                    var productId = $(this).attr('id');
+
+                    var newRowHtml = `<tr>`;
+                    newRowHtml += `<td>${productName}</td>`;
+                    newRowHtml += `<td><input type="number" class="quantityInput" value="0" data-product-id="${productId}" oninput="updateTotalPrice()"></td>`;
+                    newRowHtml += `<td>${productPrice}</td>`;
+                    newRowHtml += `<td class="totalPriceCell">0.00</td>`;
+                    newRowHtml += `</tr>`;
+
+                    $('#NewGridViewBody').append(newRowHtml);
+                });
+
+                // Show the new grid form
+                $('#newGridForm').show();
+                $('#gridview1').hide();
+                $('#selectProduct').hide();
+            });
+
+            $("#Submit").click(function () {
+                // Show confirmation dialog
+                var confirmAddToCart = confirm("Are you sure you want to add these products to your cart?");
+
+                // If user confirms, proceed with adding to cart
+                if (confirmAddToCart) {
+                    debugger;
+                    var products = [];
+                    var usernameText = $('#hh11').text(); // Assuming hh11 is an element with ID hh11
+
+                    $('#NewGridViewBody').find('tr').each(function () {
+
+                        var productstr = $(this).find('.quantityInput').data('product-id');
+                        var productId = parseInt(productstr.match(/\d+/)[0], 10);
+                        var productAmount = $(this).find('td:eq(2)').text().trim(); // Assuming product amount is in the third td
+                        var quantity = parseInt($(this).find('.quantityInput').val()); // Assuming quantity input has class .quantityInput
+
+                        products.push({
+                            ProductId: productId,
+                            Quantity: quantity,
+                            ProductAmount: productAmount,
+                            Email: usernameText
+                        });
+                    });
+
+                    var cartList = {
+                        Items: products
+                    };
+
+                    // Send the collected product data to the server using AJAX
+                    $.ajax({
+                        url: '/User/AddCart',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(cartList), // Sending cartList directly as JSON
+                        success: function (response) 
+                        {
+                            debugger;
+                            if (response == 1) {
+                                    Swal.fire({
+                                        icon: "success",
+                                    title: "adding products to cart successfully",
+                                        text: 'Thank you',
+                                        confirmButtonText: 'OK',
+                                        timer: 5000,
+                                        showConfirmButton: true,
+                                        showCloseButton: true,
+                                        showCancelButton: true,
+                                        timerProgressBar: true
+                                    });
+                                }
+                                
+                                // Populate new grid with selected products
+                            $('#NewGridViewBody').find('tr').each(function () 
+                            {
+                                    var productName = $(this).find('td:eq(0)').text();
+                                    var price = $(this).find('td:eq(2)').text();
+                                    var quantity = $(this).find('.quantityInput').val();
+                                var totalPrice = updateTotalPrice();
+
+                                    var newRowHtml = `<tr>`;
+                                    newRowHtml += `<td>${productName}</td>`;
+                                    newRowHtml += `<td>${quantity}</td>`;
+                                    newRowHtml += `<td>${price}</td>`;
+                                     newRowHtml += `<td>${totalPrice}</td>`;
+                                    newRowHtml += `</tr>`;
+                                    $('#orderBody').append(newRowHtml);
+                                });
+                            
+                                $('#newGridForm').hide();
+                                $('#ordergrid').show();
+                        },
+                        
+                        error: function (error) {
+                            console.error('Error adding products to cart:', error);
+                            alert(' sorry');
+
+                        }
+                    });
+                }
+            });
+
+        });
+
+
+            function updateTotalPrice() {
+                var totalPrice = 0;
+
+                $('#NewGridViewBody').find('tr').each(function () {
+                    debugger;
+                    var quantityInput = $(this).find('.quantityInput');
+                    var quantity = parseFloat(quantityInput.val() || 0);
+                    var price = parseFloat($(this).find('td:eq(2)').text());
+                    var lineTotal = quantity * price;
+                    totalPrice += lineTotal;
+            
+                    $(this).find('.totalPriceCell').text(lineTotal.toFixed(2));
+                });
+
+
+                $('#totalPrice').text(totalPrice.toFixed(2));
+                return totalPrice;
+            }
+
+
+        $("#orderNow").click(function () {
+            // Show confirmation dialog
+            var confirmOrder = confirm("Are you sure you want to Order this Item?");
+
+            // If user confirms, proceed with ordering
+            if (confirmOrder) {
+                debugger;
+
+                // var products = []; // Array to store products
+
+                // $('#NewGridViewBody').find('tr').each(function () {
+                //     var productName = $(this).find('td:eq(0)').text(); // Get product name from first column (index 0)
+                //     var quantity = $(this).find('.quantityInput').val(); // Get quantity from input field with class 'quantityInput'
+                //     alert(productName)
+                //     products.push({
+                //         ProductName: productName
+
+                      
+                //     });
+                // });
+
+
+
+                // Send the collected product data to the server using AJAX
+                $.ajax({
+                    url: '/User/FinalOrder', // Adjust the URL to your server endpoint
+                    type: 'POST',
+                    // contentType: 'application/json',
+                    // data: JSON.stringify(products), // Sending orderList directly as JSON
+                    success: function (res) {
+                        debugger;
+                        var statusCode = res.status;
+                        var message = res.message;
+
+                        if (statusCode == 1) {
+                            Swal.fire({
+                                icon: "success",
+                                title: message,
+                                text: 'Thank you',
+                                confirmButtonText: 'OK',
+                                timer: 5000,
+                                showConfirmButton: true,
+                                showCloseButton: true,
+                                showCancelButton: true,
+                                timerProgressBar: true
+                            });
+
+                            // Optionally, clear or update UI after successful order
+                            $('#NewGridViewBody').empty(); // Clear the grid view
+                            $('#ordergrid').show(); // Show the order grid
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error placing order:', error);
+                        alert('Sorry, there was an error placing your order.');
+                    }
+                });
+            }
+        });
+
+       
+
+    </script>
 </body>
 </html>
-
-<!-- jQuery 3.x -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-
-<script>
-
-    $(document).ready(function () {
-        CategoryListForDropdown();
-    })
-    function CategoryListForDropdown() {
-        $.ajax({
-            url: '/user/CategoryListForDropdown',
-            type: 'GET',
-            success: function (res) {
-                debugger;
-                if (res.length > 0) {
-                    for (var row of res) {
-                        $("#category").append(`<option value="${row.categoryId}">${row.categoryName} </option>`)
-                        }
-                }
-            }
-        })
-    }
-    function ProductListForDropdown() {
-
-        var categoryid = $("#category").val();
-        $("#product").empty()
-        $.ajax({
-            url: '/user/productListForBinds',
-            type: 'GET',
-            data: { categoryid: categoryid },
-            success: function (res) {
-                if (res.length > 0) {
-                    for (var row of res) {
-                        $("#product").append(`<option value='${row.id}'> ${ row.productName } </option>`)
-                        }
-                }
-            }
-        })
-    }
-</script>

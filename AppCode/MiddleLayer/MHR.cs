@@ -8,8 +8,9 @@ using System;
 using System.Collections;
 using System.Data;
 using System.Data.SqlClient;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace RP_task.AppCode.MiddleLayer
-{  
+{
     public class MHR : IHR
     {
         BLHR _blhr;
@@ -19,7 +20,7 @@ namespace RP_task.AppCode.MiddleLayer
         }
         public IEnumerable<Category> GetCategoryList()
         {
-           DataTable dataTable= _blhr.ExecuteSelect("proc_selectCategory");
+            DataTable dataTable = _blhr.ExecuteSelect("proc_selectCategory");
             List<Category> catagoaries = new List<Category>();
             foreach (DataRow dr in dataTable.Rows)
             {
@@ -35,10 +36,10 @@ namespace RP_task.AppCode.MiddleLayer
         }
         public IEnumerable<Category> GetCategoryById(int CategoryId)
         {
-           DataTable dataTable= _blhr.ExecuteSelectWithParameters("proc_SelectCategoryById", new SqlParameter[]
-           {
+            DataTable dataTable = _blhr.ExecuteSelectWithParameters("proc_SelectCategoryById", new SqlParameter[]
+            {
                new SqlParameter("@_id",CategoryId)
-           });
+            });
             List<Category> catagoaries = new List<Category>();
             foreach (DataRow dr in dataTable.Rows)
             {
@@ -46,7 +47,7 @@ namespace RP_task.AppCode.MiddleLayer
                 catagoary.CategoryId = Convert.ToInt32(dr["_ID"]);
                 catagoary.CategoryName = dr["_CategoryName"].ToString();
                 catagoary.IsActive = Convert.ToBoolean(dr["_IsActive"]);
-               
+
                 catagoaries.Add(catagoary);
             }
             return catagoaries;
@@ -63,20 +64,20 @@ namespace RP_task.AppCode.MiddleLayer
                 new SqlParameter("@IsActive",category.IsActive ),
                  new SqlParameter("@CategoryId",category.CategoryId)
            });
-            if(data is Response)
+            if (data is Response)
             {
                 response = (Response)data;
             }
             return response;
-            
+
         }
-       
+
         public object DeleteCategory(int CategoryId)
         {
             object data = _blhr.ExecuteScalarwithparamete("proc_DeleteCategoryById", new SqlParameter[]
               {
                 new SqlParameter("@CategoryID",CategoryId),
-               
+
               });
             return data;
         }
@@ -93,7 +94,7 @@ namespace RP_task.AppCode.MiddleLayer
                 product.CategoryId = Convert.ToInt32(dr["_CategoryId"]);
                 product.ProductName = dr["_ProductName"].ToString();
                 product.ProductImage = dr["_ProductImage"].ToString();
-      
+
                 product.CategoryName = dr["_CategoryName"].ToString();
                 product.IsActive = Convert.ToBoolean(dr["_IsActive"]);
                 product.EntryDate = Convert.ToDateTime(dr["_EntryDate"]);
@@ -117,10 +118,10 @@ namespace RP_task.AppCode.MiddleLayer
             }
             return categories;
         }
-        public object AddOrUpdateProduct(Product product )
+        public object AddOrUpdateProduct(Product product)
         {
-          
-            
+
+
             Response response = new Response();
             object data = _blhr.Execute("proc_AddOrUpdateProduct", new SqlParameter[]
            {
@@ -140,7 +141,7 @@ namespace RP_task.AppCode.MiddleLayer
             return response;
 
 
-            
+
         }
 
         public object DeleteProduct(int ProductId)
@@ -170,7 +171,7 @@ namespace RP_task.AppCode.MiddleLayer
                 product.ProductImage = dr["_ProductImage"].ToString();
                 product.IsActive = Convert.ToBoolean(dr["_IsActive"]);
                 products.Add(product);
-                     }
+            }
             return products;
 
         }
@@ -179,7 +180,7 @@ namespace RP_task.AppCode.MiddleLayer
             Response response = new Response();
             object data = _blhr.Execute("[proc_AddOrUpdateUser]", new SqlParameter[]
            {
-                
+
         new SqlParameter("@Name",SqlDbType.VarChar,50){ Value=users.Name},
         new SqlParameter("@Email",SqlDbType.VarChar,100){ Value=users.Email},
         new SqlParameter("@Phone",SqlDbType.BigInt){ Value=users.Phone},
@@ -207,7 +208,7 @@ namespace RP_task.AppCode.MiddleLayer
                 user.Password = dr["_Password"].ToString();
                 user.Email = dr["_Email"].ToString();
                 user.Id = Convert.ToInt32(dr["_Id"]);
-              
+
                 user.Name = dr["_Name"].ToString();
                 user.IsActive = Convert.ToBoolean(dr["_IsActive"]);
                 user.EntryDate = Convert.ToDateTime(dr["_EntryDate"]);
@@ -233,7 +234,7 @@ namespace RP_task.AppCode.MiddleLayer
 
         new SqlParameter("@UserId",SqlDbType.VarChar,50){ Value=login.username},
         new SqlParameter("@Password",SqlDbType.VarChar,100){ Value=login.password},
-      
+
            });
             if (data is Response)
             {
@@ -243,7 +244,7 @@ namespace RP_task.AppCode.MiddleLayer
         }
         public List<Product> GetProductForDropdown(int categoryid)
         {
-            DataTable dt = _blhr.ExecuteSelectWithParameters("proc_GetProductName", new SqlParameter[]
+            DataTable dt = _blhr.ExecuteSelectWithParameters("[proc_GetProductNameForDropdown]", new SqlParameter[]
             {
         new SqlParameter("@CategoryId",categoryid)
             });
@@ -253,6 +254,8 @@ namespace RP_task.AppCode.MiddleLayer
                 Product product = new Product();
                 product.Id = Convert.ToInt32(row["_Id"]);
                 product.ProductName = row["_ProductName"].ToString();
+                product.ProductPrice = Convert.ToDecimal(row["_ProductPrice"]);
+
                 products.Add(product);
             }
             return products;
@@ -273,7 +276,7 @@ namespace RP_task.AppCode.MiddleLayer
             return response;
 
         }
-        public object  ChangePassword(User user)
+        public object ChangePassword(User user)
         {
 
             object respons = _blhr.ExecuteScalarwithparamete("proc_ChangePassword", new SqlParameter[]
@@ -284,6 +287,112 @@ namespace RP_task.AppCode.MiddleLayer
 
             return respons;
         }
-    }       
 
+        public List<User> MyProfile(string email)
+        {
+            DataTable dt = _blhr.ExecuteSelectWithParameters("proc_MyProfile", new SqlParameter[]
+            {
+                new SqlParameter("@Emailid",email)
+            });
+            List<User> userlist = new List<User>();
+            foreach (DataRow row in dt.Rows)
+            {
+                User usermodel = new User();
+                usermodel.Name = row["_Name"].ToString();
+                usermodel.Address = row["_Address"].ToString();
+                usermodel.Email = row["_Email"].ToString();
+                usermodel.Phone = Convert.ToInt64(row["_Phone"]);
+                usermodel.Password = row["_Password"].ToString();
+                userlist.Add(usermodel);
+            }
+            return userlist;
+        }
+        public Response UpdateProfile(User users)
+        {
+            Response response = new Response();
+            object data = _blhr.Execute("Proc_UpdateProfile", new SqlParameter[]
+           {
+
+        new SqlParameter("@Name",SqlDbType.VarChar,50){ Value=users.Name},
+        new SqlParameter("@Phone",SqlDbType.BigInt){ Value=users.Phone},
+        new SqlParameter("@Address",SqlDbType.VarChar,100){ Value=users.Address},
+               new SqlParameter("@Email",SqlDbType.VarChar,100){ Value=users.Email},
+
+
+
+           });
+            if (data is Response)
+            {
+                response = (Response)data;
+            }
+            return response;
+        }
+        public IEnumerable<Category> GetCategoryListUseInProduct()
+        {
+            DataTable dataTable = _blhr.ExecuteSelect("[proc_CategoryListUseInProduct]");
+            List<Category> categories = new List<Category>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                Category category = new Category();
+                category.CategoryId = Convert.ToInt32(dr["_ID"]);
+                category.CategoryName = dr["_CategoryName"].ToString();
+                categories.Add(category);
+            }
+            return categories;
+        }
+        public object AddtblCart(Cartlist cart)
+        {
+            object result = null;
+
+            foreach (var item in cart.Items)
+            {
+                result = _blhr.ExecuteScalarwithparamete("Proc_AddProductInCart", new SqlParameter[]
+                {
+            new SqlParameter("@ProductAmount", item.ProductAmount),
+            new SqlParameter("@ProductId", item.ProductId),
+            new SqlParameter("@Quantity", item.Quantity),
+            new SqlParameter("@Email", SqlDbType.VarChar) { Value = item.Email }
+                });
+            }
+
+            return result;
+        }
+        public Response FinalOrder()
+        {
+
+            Response response = new Response();
+            object data = _blhr.Executeee("proc_InsertCartItemsIntoOrders");
+
+       
+            if (data is Response)
+            {
+                response = (Response)data;
+            }
+            return response;
+        }
+        public IEnumerable<OrderMaster> OrderMastersListForOrderReport(OrderMaster order)
+        {
+            DataTable dt = _blhr.ExecuteSelectWithParameters("proc_OrderReport", new SqlParameter[]
+           {
+        new SqlParameter("@Id",order.UserId),
+         new SqlParameter("@From_Date",order.FromDate),
+         new SqlParameter("@ToDate",order.ToDate)
+           });
+            List<OrderMaster> orderMasters = new List<OrderMaster>();
+            foreach (DataRow row in dt.Rows)
+            {
+                OrderMaster order1 = new OrderMaster();
+                order1.UserId = Convert.ToInt32(row["_Id"]);
+                order1.UserNAme = row["_Name"].ToString();
+                order1.OrderId = Convert.ToInt32(row["_OrderId"]);
+                order1.TotalAmount = Convert.ToInt32(row["_TotalAmount"]);
+                order1.EnteryDate = Convert.ToDateTime(row["_EntryDate"]);
+
+                orderMasters.Add(order1);
+            }
+            return orderMasters;
+        }
+
+
+    }
 }

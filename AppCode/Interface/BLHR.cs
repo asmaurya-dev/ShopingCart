@@ -225,5 +225,44 @@ namespace RP_task.AppCode.BusinessLayer
 
             return response;
         }
+        public Response Executeee(string proc)
+        {
+            Response response = new Response();
+
+            using (SqlCommand cmd = new SqlCommand(proc, _connection))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+               
+                _connection.Open();
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        // Read the first row (assuming the stored procedure returns one row)
+                        reader.Read();
+
+                        // Retrieve status code and message columns
+                        int statusCodeIndex = reader.GetOrdinal("StatusCode");
+                        int messageIndex = reader.GetOrdinal("Message");
+                       
+                        // Retrieve values
+                        int statusCode = reader.GetInt32(statusCodeIndex);
+                        string message = reader.GetString(messageIndex);
+                       
+
+                        // Set the values in the response object
+                        response.Status = statusCode;
+                        response.Message = message;
+                      
+                    }
+                }
+
+                _connection.Close();
+            }
+
+            return response;
+        }
     }
 }

@@ -12,6 +12,9 @@ using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using ShopingCart.Helper;using ShopingCart.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using RP_task.AppCode.BusinessLayer;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace ShopingCart.Controllers
 {
@@ -100,26 +103,7 @@ namespace ShopingCart.Controllers
 
 
         ////http://localhost:5152/api/App/AddOrUpdateCategory
-        //[HttpPost("AddOrUpdateCategory/{CategoryName},{IsActive},{CategoryId}")]
-        //public IActionResult AddOrUpdateCategory(string CategoryName, bool IsActive, int CategoryId)
-        //{
-        //    try
-        //    {
-        //        var category = _hr.AddOrUpdateCategory(CategoryId, CategoryName, IsActive);
-        //        return Ok(category);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest($"An error occurred: {ex.Message}");
-        //    }
-        //}
-        //http://localhost:5152/api/App/AddOrUpdateCategory
-        // {
-        //    "CategoryId": 0,
-        //    "CategoryName": "Electron",
-        //    "IsActive": true
-        //}
-        //Body:Json
+      
         #endregion
         #region PRODUCT
         [HttpGet]
@@ -208,8 +192,6 @@ namespace ShopingCart.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
-
 
 
         #endregion
@@ -318,6 +300,77 @@ namespace ShopingCart.Controllers
             {
                 return BadRequest("Error occured");
             }
+        }
+        public IActionResult myProfile(string email)
+        {
+            try
+            {
+                List<User> userlist= _hr.MyProfile(email);
+                return Ok(userlist);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error occured");
+            }
+        }
+        [HttpPost]
+        public IActionResult UpdateProfile(User users)
+        {
+            try
+            {
+                
+                var userData = _hr.UpdateProfile(users);    
+
+                return Ok(userData);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+
+        }
+        [HttpPost]
+        public IActionResult AddCartItem([FromBody] Cartlist cart)
+        {
+            try
+            {
+                var response = _hr.AddtblCart(cart);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpPost]
+        public IActionResult FinalOrder()
+        {
+            try
+            {
+                var response = _hr.FinalOrder
+                    ();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        public IActionResult OrderMastersListForOrderReport(OrderMaster order)
+        {
+            try
+            {
+                IEnumerable<OrderMaster> users = _hr.OrderMastersListForOrderReport(order);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (Console.WriteLine can be replaced with proper logging)
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+
         }
         #endregion
     }

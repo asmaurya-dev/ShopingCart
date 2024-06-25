@@ -17,5 +17,32 @@
         public string? username { get; set; }
         public string? password { get; set; }
     }
+     public class Cart
+    {
+        public int ?Id { get; set; }
+        public decimal? ProductAmount { get; set; }
+        public int? ProductId { get; set; }
+        public int ?UserId { get; set; }
+        public int? Quantity { get; set; }
+        public string? ProductName { get; set; }
+        public string ? Email { get; set; }
+     
+    }
+    public class Cartlist
+    {
+        public List<CartItem> Items { get; set; }
+    }
+
+
+
+    public class CartItem
+    {
+        public int ProductId { get; set; }
+        public int Quantity { get; set; }
+        public string ProductAmount { get; set; }
+        public string Email { get; set; }
+
+    }
+
 
 }

@@ -26,7 +26,7 @@ namespace ShopingCart.Controllers
         public static string apiBaseUrl = "http://localhost:5152/";
         public static string apiBaseUrl1 = "https://localhost:7099/";
         private readonly IHostingEnvironment hostingEnvironment;
-        
+
         public UserController(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
 
         {
@@ -61,7 +61,7 @@ namespace ShopingCart.Controllers
         }
         [HttpPost]
         public IActionResult Login(Login login)
-        
+
         {
             string apiUrl = apiBaseUrl + "api/App/userLogin";
             try
@@ -78,10 +78,11 @@ namespace ShopingCart.Controllers
                 // Deserialize JSON response
                 Response jsonResponse = JsonConvert.DeserializeObject<Response>(response);
 
-               
+
 
                 // Store responseData in ViewBag to pass it to the view
-                jsonResponse.Name = HttpContext.Session.GetString("Name");
+                HttpContext.Session.SetString("Name", jsonResponse.Name);
+
 
                 // Return JSON response
                 return Json(jsonResponse);
@@ -92,19 +93,20 @@ namespace ShopingCart.Controllers
             }
         }
 
-
         public IActionResult UserDashbord()
         {
+            string username = HttpContext.Session.GetString("Username");
+            ViewBag.Username = username;
 
             return View();
         }
-      
-      
+
+
         public IActionResult CategoryListForDropdown()
         {
             try
             {
-                IEnumerable<Category> category = _hr.CategoryListForDropdown();
+                IEnumerable<Category> category = _hr.GetCategoryListUseInProduct();
                 return Json(category);
             }
             catch (Exception ex)
@@ -130,7 +132,7 @@ namespace ShopingCart.Controllers
         }
         public IActionResult ForgetPassword()
         {
-            return View(); 
+            return View();
         }
         public IActionResult VeryfiEmail(string email)
         {
@@ -155,7 +157,7 @@ namespace ShopingCart.Controllers
             try
             {
                 string response = ApiService.ExecuteHttpRequest(HttpMethod.Post, apiUrl, user);
-  
+
 
                 return Json(response);
             }
@@ -170,9 +172,83 @@ namespace ShopingCart.Controllers
             if (HttpContext.Session.GetString("Username") != null)
             {
                 HttpContext.Session.Remove("Username");
+               
             }
             return RedirectToAction("Login");
         }
+        public IActionResult myProfile()
+        
+        {
+            string username = HttpContext.Session.GetString("Username");
+            string apiUrl = apiBaseUrl + $"api/App/myProfile?email={username}";
+            try
+            {
+                // ExecuteHttpRequest is now synchronous
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Get, apiUrl);
+                List<User> Users = JsonConvert.DeserializeObject<List<User>>(response);
 
+                return View(Users);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+                return Json(new { error = "An error occurred while processing your request." });
+
+
+            }
+
+        }
+        public IActionResult updateProfile(User users)
+        {
+            string apiUrl = apiBaseUrl + "api/App/UpdateProfile";
+            try
+            {
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Post, apiUrl, users);
+
+                Response jsonResponse = JsonConvert.DeserializeObject<Response>(response);
+
+                return Json(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+        [HttpPost]
+        public IActionResult AddCart( [FromBody]Cartlist cart)
+        {
+            string apiUrl = apiBaseUrl + "api/App/AddCartItem";
+            try
+            {
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Post, apiUrl, cart);
+
+              
+
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        public IActionResult FinalOrder()
+        {
+            string apiUrl = apiBaseUrl + "api/App/FinalOrder";
+            try
+            {
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Post, apiUrl);
+
+                Response jsonResponse = JsonConvert.DeserializeObject<Response>(response);
+
+                return Json(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+      
     }
 }

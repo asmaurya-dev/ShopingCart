@@ -95,7 +95,7 @@ document.getElementById("password").addEventListener("keypress", function (event
           charCode === 8)) { 
         event.preventDefault();
     }
-    if (price.length >= 10) {
+    if (price.length >= 6) {
         event.preventDefault();
     }
 });
@@ -110,6 +110,23 @@ document.getElementById("password").addEventListener("keypress", function (event
             (charCode >= 97 && charCode <= 122) ||
             charCode === 64 ||
             charCode === 8)) {
+            event.preventDefault();
+        }
+        if (price.length >= 6) {
+            event.preventDefault();
+        }
+    });
+    document.getElementById("name").addEventListener("keypress", function (event) {
+        var price = document.getElementById("name").value;
+        var charCode = event.which ? event.which : event.keyCode;
+        var charStr = String.fromCharCode(charCode);
+
+
+        if (!( 
+            (charCode >= 65 && charCode <= 90) ||
+            (charCode >= 97 && charCode <= 122) ||
+            charCode === 64 ||
+            charCode === 32)) {
             event.preventDefault();
         }
         if (price.length >= 10) {

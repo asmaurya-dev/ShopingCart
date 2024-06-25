@@ -80,6 +80,7 @@ function AddOrUpdateProduct() {
         var pic = $("#product_Image").get(0).files[0];
         formData.append('file', pic);
     }
+    debugger;
 
     $.ajax({
         url: '/Admin/AddOrUpdateProduct',
@@ -106,6 +107,8 @@ function AddOrUpdateProduct() {
                 });
                 $("#Modal").trigger('click');
                 $('#Modal').modal('hide');
+                $("#Modal .close").click();
+                
                 SelectProduct()
                 resetFormFields()
             }
@@ -190,7 +193,7 @@ $('.modal .close, .modal-footer .btn-danger').click(function () {
                 afterModalHidden();
             });
             resetFormFields();
-        }, 500); // 500ms delay before executing the changes
+        }, 50); 
     } catch (error) {
         console.log(error);
     }

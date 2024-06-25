@@ -5,6 +5,11 @@
 <html dir="ltr" lang="en">
 
 <head>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Tell the browser to be responsive to screen width -->
@@ -59,14 +64,29 @@
                     <ul class="navbar-nav ms-auto d-flex align-items-center">
                         <li class=" in">
                             <form role="search" class="app-search d-none d-md-block me-3">
-                                <input type="text" placeholder="Search..." class="form-control mt-0">
+                               @*  <input type="text" placeholder="Search..." class="form-control mt-0">
                                 <a href="" class="active">
                                     <i class="fa fa-search"></i>
-                                </a>
+                                </a> *@
                             </form>
                         </li>
-                      
-                        <li style="color:white" >
+                        
+                            
+                        
+
+                        <li style="color:white "  >
+                            
+                            
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle profile-pic" href="#" id="usernameDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="~/lib/plugins/images/users/varun.jpg" alt="user-img" width="36" class="img-circle">
+                                <span class="text-white font-medium">
+                                       
+                                            @inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor
+
+                            @{
+                                string Name = httpContextAccessor.HttpContext.Session.GetString("Name");
+                            }
                             @inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor
 
                             @{
@@ -79,72 +99,86 @@
                             }
                             else
                             {
-                                @username
+                             @Name   
                             }
+                                        
+                                </span>
+                                <i class="fa fa-caret-down ms-2"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="usernameDropdown">
 
-
-
+                                <li><a class="dropdown-item" href="~/Admin/AdminProfile">Profile</a></li>
+                                <li><a class="dropdown-item" href="~/User/LogOut">Logout</a></li>
+                            </ul>
+                        </li>
                         </li>
                     </ul>
                 </div>
             </nav>
         </header>
-        <aside class="left-sidebar" data-sidebarbg="skin6">
+        <aside class="left-sidebar bg-dark" data-sidebarbg="skin6">
             <!-- Sidebar scroll-->
-            <div class="scroll-sidebar">
+            <div class="scroll-sidebar bg-dark">
                 <!-- Sidebar navigation-->
                 <nav class="sidebar-nav">
-                    <ul id="sidebarnav">
-                        <!-- User Profile-->
-                       
+                    <ul id="sidebarnav" class="bg-dark">
                         <li class="sidebar-item">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/Admin/Category"
                                aria-expanded="false">
-                                <i class="fa fa-user" aria-hidden="true"></i>
-                                <span class="hide-menu">Category</span>
+                                <i class="fa fa-user text-light" aria-hidden="true"></i>
+                                <span class="hide-menu text-light">Category</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/Admin/Product"
                                aria-expanded="false">
-                                <i class="fa fa-table" aria-hidden="true"></i>
-                                <span class="hide-menu">Product</span>
+                                <i class="fa fa-table text-light" aria-hidden="true"></i>
+                                <span class="hide-menu text-light">Product</span>
                             </a>
                         </li>
                         <li class="sidebar-item">
                             <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/Admin/getUserList"
                                aria-expanded="false">
-                                <i class="fa fa-font" aria-hidden="true"></i>
-                                <span class="hide-menu">UserList</span>
+                                <i class="fa fa-font text-light" aria-hidden="true"></i>
+                                <span class="hide-menu text-light">UserList</span>
                             </a>
                         </li>
-                        
+                        <li class="sidebar-item">
+                            <div class="dropdown">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link dropdown-toggle"
+                                   href="#" role="button" id="orderReportDropdown" data-bs-toggle="dropdown"
+                                   aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-file text-light" aria-hidden="true"></i>
+                                    <span class="hide-menu text-light">Report</span>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="orderReportDropdown">
+                                    <a class="dropdown-item" href="/Admin/OrderReport">Order Report</a>
+                                    <a class="dropdown-item" href="#" data-value="230" data-price="0">Payment Report</a>
+                                </div>
+                            </div>
+                        </li>
                         <li class="text-center p-20 upgrade-btn">
-                            <a href="https://www.wrappixel.com/templates/ampleadmin/"
-                               class="btn d-grid btn-danger text-white" target="_blank">
-                                Upgrade to Pro
-                            </a>
+                            <!-- If there is content intended here, add it as needed -->
                         </li>
                     </ul>
-
                 </nav>
+
             </div>
         </aside>
         <div class="page-wrapper">
             <div class="page-breadcrumb bg-white">
                 <div class="row align-items-center">
                     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                        <h4 class="page-title">Dashboard</h4>
+                        <h4 class="page-title">Admin Dashboard</h4>
                     </div>
                     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                         <div class="d-md-flex">
                             <ol class="breadcrumb ms-auto">
-                                <li><a href="#" class="fw-normal">Dashboard</a></li>
                             </ol>
-                            <a href="~/User/LogOut"
+                           @*  <a href="~/User/LogOut"
                                class="btn btn-danger  d-none d-md-block pull-right ms-3 hidden-xs hidden-sm waves-effect waves-light text-white">
                                Logout
-                            </a>
+                            </a> *@
                         </div>   
                     </div>
                    

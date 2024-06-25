@@ -59,6 +59,7 @@
 
 <script>
     $(document).ready(function () {
+        debugger;
         $('#loginForm').on('submit', function (e) {
             e.preventDefault();
             var username = $('#username').val().trim();
@@ -99,9 +100,7 @@
                 success: function (res) {
                     var statusCode = res.status;
                     var message = res.message;
-                    if (statusCode == -1) {
-                        alert("Invalid UserId and Password");
-                    }
+                    localStorage.setItem('status', statusCode)
                     if (statusCode == 1) {
                         alert("Admin Login Successful");
                         window.location.href = "/Admin/Category";
@@ -116,7 +115,7 @@
                     }
                 },
                 error: function (error) {
-                    alert('Login failed');
+                    alert('Email Id and Password is Not match');
                 }
             });
         });
@@ -135,4 +134,34 @@
             }
         });
     });
+    // Keypress event for password fields
+    $("#password").keypress(function (event) {
+        var charCode = event.which || event.keyCode;
+        var charStr = String.fromCharCode(charCode);
+
+        // Allow specific characters
+        if (!((charCode >= 48 && charCode <= 57) ||
+            (charCode >= 65 && charCode <= 90) ||
+            (charCode >= 97 && charCode <= 122) ||
+            /[#!@@$%^&*-]/.test(charStr) ||
+            charCode === 8)) {
+            event.preventDefault();
+        }
+
+        var password = $(this).val() + charStr;
+
+        // Prevent further input if the length is 10 or more characters
+        if (password.length > 6) {
+            event.preventDefault();
+        }
+
+        // Validate the current password value with the regex
+        if (!validatePassword(password)) {
+            // Optionally, you can add some feedback to the user here
+            // For example, display a message or highlight the input field
+            console.log("Password does not meet the criteria");
+        }
+    });
+
+    // document.getElementById("password").addEventListener("input", email);
 </script>

@@ -1,0 +1,176 @@
+﻿@model IEnumerable<ShopingCart.Models.User>
+
+@{
+
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration Form</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.8rem;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="jumbotron custom-jumbotron">
+            <div class="row justify-content-center">
+                <div class="col-sm-8">
+                    <h2 class="mb-4 text-center my-3">Update Profiles</h2>
+                    @foreach (var user in Model)
+                    {
+                        <form id="registrationForm" class="needs-validation mb-4" novalidate>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="name">Name:</label>
+                                        <input type="text" class="form-control" id="name" name="name" value="@user.Name" required>
+                                        <div class="invalid-feedback">Please enter your name.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email">Email:</label>
+                                        <input type="email" class="form-control" disabled id="email" name="email" value="@user.Email" required>
+                                        <div class="invalid-feedback">Please enter a valid email address.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+
+                                    <div class="form-group">
+                                        <label for="phone">Phone:</label>
+                                        <input type="number" class="form-control" id="phone" name="phone" value="@user.Phone" required>
+                                        <div class="invalid-feedback">Please enter your Number.</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="password">Password:</label>
+                                        <input type="text" class="form-control" disabled id="password" name="password" value="@user.Password" minlength="8" required>
+                                        <div class="invalid-feedback">Password must be at least 8 characters.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">Address:</label>
+                                <textarea class="form-control" id="address" name="address" required>@user.Address</textarea>
+                                <div class="invalid-feedback">Please enter your address.</div>
+                            </div>
+
+
+
+                            <button type="button" id="btn" class="btn btn-primary">Update Profile</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bootstrap JS and dependencies (for form validation) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#btn').click(function () {
+                // Check if any required fields are empty
+                var isValid = true;
+
+                $('.needs-validation :input').each(function () {
+                    if ($(this).prop('required') && !$(this).val().trim()) {
+                        isValid = false;
+                        return false; // exit each loop early
+                    }
+                });
+
+                if (!isValid) {
+                    // If any required field is empty, prevent form submission
+                    return;
+                }
+
+                // If all required fields are filled, proceed with form submission
+                var formData = new FormData();
+                formData.append('Name', $('#name').val().trim());
+                formData.append('Phone', $('#phone').val());
+                formData.append('Address', $('#address').val());
+                formData.append('Email', $('#email').val());
+
+                $.ajax({
+                    url: '/Admin/updateProfile',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        var statuscode = response.statuscode;
+                        var message = response.message;
+                        alert(message);
+
+
+                    },
+                    error: function (error) {
+                        alert('An error occurred. Please try again.');
+                        console.log("Error: ", error);
+                    }
+                });
+            });
+        });
+
+        // Validation for phone number (allow only numbers and limit to 10 digits)
+        document.getElementById("phone").addEventListener("keypress", function (event) {
+            var phone = document.getElementById("phone").value;
+            var charCode = event.which ? event.which : event.keyCode;
+
+            if ((charCode < 48 || charCode > 57) && charCode !== 8) {
+                event.preventDefault();
+            }
+            if (phone.length >= 10 && charCode !== 8) {
+                event.preventDefault();
+            }
+        });
+
+        // JavaScript for Bootstrap form validation
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+
+</body>
+</html>
+

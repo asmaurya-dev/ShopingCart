@@ -1,0 +1,60 @@
+﻿@model IEnumerable<ShopingCart.Models.OrderMaster>
+<style>
+    #table {
+        border: solid 5px;
+        border-top-color: #8B0000;
+        border-right-color: #8B0000;
+        border-bottom-color: #8B0000;
+        border-left-color: #8B0000;
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        text-align: center;
+    }
+
+        #table th, #table td {
+            border: solid 1px #8B0000; /* Dark border for table cells */
+            padding: 10px; /* Increased padding inside cells */
+            text-align: left; /* Align text left within cells */
+        }
+
+        #table th {
+            background-color: #9FE2BF; /* Dark purple background color for headers */
+            color: white; /* White text color for headers */
+            font-weight: bold; /* Bold font for headers */
+        }
+
+        #table tbody tr:nth-child(even) {
+            background-color: #f0f0f0; /* Light gray alternate row color */
+        }
+        tr{
+            font-weight:bold;
+            text-align:center;
+            
+        }
+</style>
+<table id="table">
+
+    <thead>
+        <tr>
+            <th>User Id</th>
+            <th>User Name</th>
+            <th>Total Amount</th>
+            <th>Entry Date</th>
+            <th>Order ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.UserId</td>
+                <td>@item.UserNAme</td>
+                <td>@(item.TotalAmount)</td>
+                <td>@item.EnteryDate</td>
+                <td>@item.OrderId</td>
+            </tr>
+        }
+    </tbody>
+</table>

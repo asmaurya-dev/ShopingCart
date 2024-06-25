@@ -1,5 +1,36 @@
 ﻿@model IEnumerable<ShopingCart.Models.Category>
-<table class="border border-5 table table-bordered " style="background:#ddddee">
+<style>
+    #table {
+        border: solid 5px;
+        border-top-color: #8B0000;
+        border-right-color: #8B0000;
+        border-bottom-color: #8B0000;
+        border-left-color: #8B0000;
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        background-color: #ddddee; /* Light grayish-blue background color */
+    }
+
+        #table th, #table td {
+            border: solid 1px #8B0000; /* Dark border for table cells */
+            padding: 10px; /* Increased padding inside cells */
+            text-align: left; /* Align text left within cells */
+        }
+
+        #table th {
+            background-color: #4B0082; /* Dark purple background color for headers */
+            color: white; /* White text color for headers */
+            font-weight: bold; /* Bold font for headers */
+        }
+
+        #table tbody tr:nth-child(even) {
+            background-color: #f0f0f0; /* Light gray alternate row color */
+        }
+</style>
+
+<table id="table">
     <thead>
         <tr>
             <th>Id</th>
@@ -17,17 +48,16 @@
                 <td>@item.CategoryName</td>
                 <td>@(item.IsActive ? "Active" : "Inactive")</td>
                 <td>@item.EntryDate</td>
-                
+
                 <td>
                     <button class='btn btn-success' onclick='GetCategoryById(@item.CategoryId)' data-toggle="modal" data-target="#myModal">Edit</button>
                     <button class='btn btn-danger delete-btn' data-id="" onclick="if(confirm('Are you sure you want to delete?')) { DeleteCategory(@item.CategoryId) }">Delete</button>
-
                 </td>
-               
             </tr>
         }
     </tbody>
 </table>
+
 @* 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 

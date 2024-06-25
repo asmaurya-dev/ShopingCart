@@ -288,7 +288,68 @@ namespace ShopingCart.Controllers
         {
             return View();
         }
-       
+        public IActionResult AdminProfile()
 
+        {
+            string username = HttpContext.Session.GetString("Username");
+            string apiUrl = apiBaseUrl + $"api/App/myProfile?email={username}";
+            try
+            {
+                // ExecuteHttpRequest is now synchronous
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Get, apiUrl);
+                List<User> Users = JsonConvert.DeserializeObject<List<User>>(response);
+
+                return View(Users);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+                return Json(new { error = "An error occurred while processing your request." });
+
+
+            }
+
+        }
+        public IActionResult updateProfile(User users)
+        {
+            string apiUrl = apiBaseUrl + "api/App/UpdateProfile";
+            try
+            {
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Post, apiUrl, users);
+
+                Response jsonResponse = JsonConvert.DeserializeObject<Response>(response);
+
+                return Json(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        public IActionResult OrderReport()
+        {
+            return View();
+        }
+
+        public IActionResult PrtOrderReport(OrderMaster orderMaster)
+        {
+            string apiUrl = apiBaseUrl + "api/App/OrderMastersListForOrderReport";
+            try
+            {
+                // ExecuteHttpRequest is now synchronous
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Get, apiUrl, orderMaster);
+                List<OrderMaster> Users = JsonConvert.DeserializeObject<List<OrderMaster>>(response);
+
+                return PartialView(Users);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+                return Json(new { error = "An error occurred while processing your request." });
+            }
+            return View();
+        }
     }
 }

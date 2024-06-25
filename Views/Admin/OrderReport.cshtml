@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "OrderReport";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+<div class="container-fluid">
+    <h1>Order Report</h1>
+    <div class="row bg-dark m-3 p-4">
+        <div class="col-md-3">
+            <label for="userId1" class="text-light">User Id</label>
+            <input type="number" id="userId1" name="userId1" class="form-control" placeholder="User ID">
+        </div>
+        <div class="col-md-3">
+            <label for="fromDate" class="text-light">From Date</label>
+            <input type="date" id="fromDate" name="fromDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="toDate" class="text-light">To Date</label>
+            <input type="date" id="toDate" name="toDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label class="text-light">&nbsp;</label>
+            <input type="button" value="Search" class="btn btn-primary form-control" onclick="searchRecords()">
+            <input type="button" value="Excel" id="excelButton" class="btn btn-info form-control mt-4">
+
+        </div>
+    </div>
+
+    <div id="searchResults" class="m-3">
+        <!-- Search results will be populated here -->
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function searchRecords() {
+        var userId = $('#userId1').val();
+        var fromDate = $('#fromDate').val();
+        var toDate = $('#toDate').val();
+        debugger;
+        $.ajax({
+            url: '/Admin/PrtOrderReport',
+            type: 'POST',
+            data: {
+                userId: userId,
+                fromDate: fromDate,
+                toDate: toDate
+            },
+            success: function (response) {
+                $("#searchResults").html(response);
+            },
+            error: function () {
+                // Handle error if needed
+            }
+        });
+    }
+    // Function to export data to Excel
+    function exportToExcel() {
+        var wb = XLSX.utils.table_to_book(document.getElementById('searchResults'), { sheet: "Sheet JS" });
+        XLSX.writeFile(wb, 'Order_Report.xlsx');
+    }
+
+    // Event handler for the Excel button
+    $(document).ready(function () {
+        $('#excelButton').click(function () {
+            exportToExcel();
+        });
+    });
+</script>
