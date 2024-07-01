@@ -15,9 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.2/dist/xlsx.full.min.js"></script>
     <style>
 
-        input[type="file"] {
-            color: transparent;
-        }
+
     </style>
 </head>
 <body>
@@ -27,7 +25,7 @@
     <button for="execlupload"  id="Upload" class="btn btn-danger float-end mt-1 p-1">
         <i class="fas fa-file-upload"> </i> Upload
     </button>
-   <input type="file" class="float-end bg-primary   p-1 " style="width:100px" id="file" name="file" required>
+   <input type="file" class="float-end bg-primary " style="width:100px" id="file" name="file" required>
     <button class="btn btn-info float-end m-1 p-1" data-toggle="modal" data-target="#Modal">Add New Product</button>
     <button class="btn btn-success float-end m-1 p-1" id="download" @* onclick="downloadExcel()" *@>Download excel formate</button>
    
@@ -90,11 +88,11 @@
 
     <script>
         $(document).ready(function () {
-            SelectProduct();
+            selectProduct();
 
         });
         $("#Upload").click(function () {
-          
+       
                 uploadFile()
 
                
@@ -118,7 +116,7 @@
         }
 
         CKEDITOR.replace('product_description');
-        document.getElementById("product_name").addEventListener("input", alphabetOnly);
+       ;
 
         document.getElementById("btn").addEventListener("click", function (event) {
             if (!validateSelectInput()) {
@@ -127,6 +125,7 @@
         });
 
         $('.modal .close, .modal-footer .btn-danger').click(function () {
+            $("#ModalLabel").text('Add Product')
             try {
                 setTimeout(function () {
                     $('#Modal').modal('hide').on('hidden.bs.modal', function () {
@@ -140,7 +139,7 @@
             }
         });
 
-        function SelectProduct() {
+        function selectProduct() {
             $.ajax({
                 url: '/Admin/PrtProductList',
                 type: 'GET',
@@ -158,7 +157,7 @@
         function downloadExcel() {
             // Example data
             var data = [
-                ["CategoeryId","ProductName","ProductPrice","ProductDiscription", "IsActive"],
+                ["CategoeryId","ProductName","ProductPrice", "IsActive"],
 
             ];
 
@@ -217,7 +216,7 @@
                 success: function (res) {
                     debugger;
                     alert('File uploaded successfully')
-                   SelectProduct();
+                   selectProduct();
                    $("file").val('');
 
                 },
@@ -228,6 +227,20 @@
             });
         }
 
+        function alphabetOnly(event) {
+            var inputElement = event.target;
+            var value = inputElement.value;
+            inputElement.value = value.replace(/[^A-Za-z\s]+/g, '').replace(/\s+/g, ' ');
+            var isValid = /^[A-Za-z\s]+$/.test(inputElement.value);
+            // Assuming you want to do something with isValid, like validation
+            console.log(isValid); // Example: Log the validation result
+        }
+
+        // Assuming you have input elements with id="vendor_Name"
+        var inputElements = document.querySelectorAll("#product_name"); // Use querySelectorAll for ID selector
+        inputElements.forEach(function (inputElement) {
+            inputElement.addEventListener("input", alphabetOnly);
+        });
 
     </script>
 

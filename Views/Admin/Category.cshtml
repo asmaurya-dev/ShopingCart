@@ -76,11 +76,14 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.2/dist/xlsx.full.min.js"></script>
     <script>
         $(function () {
-            $('input[type="file"]').change(function () {
-                if ($(this).val() != "") {
+            $('input[type="file"]').change(function () 
+            {
+                if ($(this).val() != "") 
+                {
                     $(this).css('display', 'block');
-                } else {
-                    $(this).css('color', 'transparent');
+                } else 
+                {
+                    $(this).css('color', 'red');
                 }
             });
         })
@@ -91,26 +94,16 @@
             }
         })
         function downloadExcel() {
-            // Example data
+            
             var data = [
                 ["CategoeryName", "IsActive"],
 
             ];
-
-            // Create a new workbook
             var workbook = XLSX.utils.book_new();
             var sheet = XLSX.utils.aoa_to_sheet(data);
-
-            // Add the worksheet to the workbook
             XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
-
-            // Generate an XLSX file as a Blob object
             var wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-
-            // Create a Blob object from array buffer
             var blob = new Blob([wbout], { type: "application/octet-stream" });
-
-            // Create a download link element
             var downloadLink = document.createElement("a");
             var url = URL.createObjectURL(blob);
 
@@ -119,7 +112,6 @@
             document.body.appendChild(downloadLink);
             downloadLink.click();
 
-            // Cleanup
             setTimeout(function () {
                 document.body.removeChild(downloadLink);
                 window.URL.revokeObjectURL(url);
@@ -320,31 +312,21 @@
             }
         }
 
-        function alphabetOnly() {
-            try {
-                var digitRegex = /[^a-zA-Z\s]+/g;
-                var x1 = document.getElementById("Category");
-                var x = x1.value;
-
-                x1.value = x.replace(digitRegex, '');
-
-                if (x.trim() === "") {
-                    return false;
-                } else {
-                    var a = /^[A-Za-z\s]+$/;
-                    if (a.test(x)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            } catch (error) {
-                console.log(error);
-            }
+       
+        function alphabetOnly(event) {
+            var inputElement = event.target;
+            var value = inputElement.value;
+            inputElement.value = value.replace(/[^A-Za-z\s]+/g, '').replace(/\s+/g, ' ');
+            var isValid = /^[A-Za-z\s]+$/.test(inputElement.value);
+            // Assuming you want to do something with isValid, like validation
+            console.log(isValid); // Example: Log the validation result
         }
 
-        // Add event listener to validate input on change
-        document.getElementById("Category").addEventListener("input", alphabetOnly);
+        // Assuming you have input elements with id="vendor_Name"
+        var inputElements = document.querySelectorAll("#Category"); // Use querySelectorAll for ID selector
+        inputElements.forEach(function (inputElement) {
+            inputElement.addEventListener("input", alphabetOnly);
+        });
         function uploadFile() {
             var formData = new FormData();
             var file = $('#file')[0].files[0];

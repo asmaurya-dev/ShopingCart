@@ -19,6 +19,7 @@ namespace RP_task.AppCode.MiddleLayer
         {
             _blhr = new BLHR(configuration);
         }
+        #region
         public IEnumerable<Category> GetCategoryList()
         {
             DataTable dataTable = _blhr.ExecuteSelect("proc_selectCategory");
@@ -82,6 +83,8 @@ namespace RP_task.AppCode.MiddleLayer
               });
             return data;
         }
+        #endregion
+        #region
         public IEnumerable<Product> GetProductList()
         {
             DataTable dataTable = _blhr.ExecuteSelect("Proc_GetProductList");
@@ -176,6 +179,8 @@ namespace RP_task.AppCode.MiddleLayer
             return products;
 
         }
+        #endregion
+        #region
         public Response AddUser(User users)
         {
             Response response = new Response();
@@ -277,6 +282,8 @@ namespace RP_task.AppCode.MiddleLayer
             return response;
 
         }
+        #endregion
+        #region
         public object ChangePassword(User user)
         {
 
@@ -288,7 +295,8 @@ namespace RP_task.AppCode.MiddleLayer
 
             return respons;
         }
-
+        #endregion
+        #region
         public List<User> MyProfile(string email)
         {
             DataTable dt = _blhr.ExecuteSelectWithParameters("proc_MyProfile", new SqlParameter[]
@@ -341,6 +349,8 @@ namespace RP_task.AppCode.MiddleLayer
             }
             return categories;
         }
+        #endregion
+        #region
         public object AddtblCart(Cartlist cart)
         {
             object result = null;
@@ -358,6 +368,7 @@ namespace RP_task.AppCode.MiddleLayer
 
             return result;
         }
+
         public Response FinalOrder()
         {
 
@@ -445,6 +456,8 @@ namespace RP_task.AppCode.MiddleLayer
                 throw new Exception("An error occurred while adding order data.", ex);
             }
         }
+        #endregion
+        #region
         public object UploadCategories(IFormFile file)
         {
             try
@@ -606,6 +619,8 @@ namespace RP_task.AppCode.MiddleLayer
 
             return products;
         }
+        #endregion
+        #region
         public Response AddVendor(Vendor vendor)
         {
             Response response = new Response();
@@ -680,6 +695,6 @@ namespace RP_task.AppCode.MiddleLayer
             }
             return vendors;
         }
-
+        #endregion
     }
 }

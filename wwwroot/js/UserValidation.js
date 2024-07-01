@@ -6,10 +6,7 @@
         }
     });
 
-   
-
- 
-    function validateForm() {
+   function validateForm() {
         var isValid = true;
         
         $('input,textarea').css('border-color', '');

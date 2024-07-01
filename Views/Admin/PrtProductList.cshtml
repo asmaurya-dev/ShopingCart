@@ -52,28 +52,26 @@
             <th>EntryDate</th>
             <th>ProductImage</th>
             <th>CategoryName</th>
-            <th style="padding-left: 50px;">Action</th>
+            <th>Edit</th>
+            <th>Delete</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var x in Model)
         {
             <tr>
-
-
-
                 <td>@x.Id</td>
                 <td>@x.ProductName</td>
                 <td>@x.ProductPrice</td>
-
                 <td>@(x.IsActive == true ? "Active" : "InActive")</td>
                 <td>@x.EntryDate</td>
                 <td><img src="/Images/@x.ProductImage" height="50" width="80" /></td>
                 <td>@x.CategoryName</td>
                 <td>
-                    <button class='btn btn-success' data-toggle="modal" data-target="#Modal" onclick="GetListById(@x.Id)">Edit</button>
-                    <button class='btn btn-danger delete-btn' onclick="if(confirm('Are you sure you want to delete?')){DeleteProduct(@x.Id)}">Delete</button>
+                    <button class='btn btn-success' data-toggle="modal" data-target="#Modal" onclick="getListById(@x.Id)">Edit</button>
                 </td>
+                <td> <button class='btn btn-danger delete-btn' onclick="if(confirm('Are you sure you want to delete?')){deleteProductById(@x.Id)}">Delete</button></td>
+               
             </tr>
         }
     </tbody>

@@ -31,7 +31,7 @@ namespace ShopingCart.Controllers
             _excelService = excelService;
         }
 
-
+        #region
         public IActionResult PrtCategoryList()
         {
             // Example usage
@@ -51,19 +51,11 @@ namespace ShopingCart.Controllers
             }
         }
 
-
-
-
         public IActionResult Category()
         {
             return View();
         }
-        public IActionResult Product()
-        {
-
-            return View();
-        }
-
+       
 
 
         [HttpPost]
@@ -135,6 +127,14 @@ namespace ShopingCart.Controllers
                 return Json(ex.Message);
             }
         }
+        #endregion
+        #region
+        public IActionResult Product()
+        {
+
+            return View();
+        }
+
         public IActionResult GetProductList()
         {
             string apiUrl = apiBaseUrl + "api/App/GetProductList";
@@ -246,8 +246,9 @@ namespace ShopingCart.Controllers
             }
         }
 
-       
-      public IActionResult PrtUserList()
+        #endregion
+        #region
+        public IActionResult PrtUserList()
       {
             string apiUrl = apiBaseUrl + "api/App/GetUserList";
             try
@@ -286,11 +287,12 @@ namespace ShopingCart.Controllers
                 return Json(new { error = "An error occurred while processing your request." });
             }
         }
-
+        #endregion
         public IActionResult AdminDashbord()
         {
             return View();
         }
+        #region
         public IActionResult AdminProfile()
 
         {
@@ -330,7 +332,8 @@ namespace ShopingCart.Controllers
             }
 
         }
-
+        #endregion
+        #region
         public IActionResult OrderReport()
         {
             return View();
@@ -393,6 +396,8 @@ namespace ShopingCart.Controllers
             
 
         }
+        #endregion
+        #region
         public IActionResult Upload(IFormFile file)
         {
             string apiUrl = apiBaseUrl + "api/App/UploadCategoery";
@@ -438,6 +443,8 @@ namespace ShopingCart.Controllers
                 return StatusCode(500, new { error = "An error occurred while processing your request." });
             } // Redirect to appropriate action after successful upload
         }
+        #endregion
+        #region
         public IActionResult Wendors()
         {
             return View();
@@ -519,6 +526,7 @@ namespace ShopingCart.Controllers
             }
 
         }
+        #endregion
     }
 }
 

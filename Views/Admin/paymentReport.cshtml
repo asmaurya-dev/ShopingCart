@@ -13,10 +13,10 @@
 
 <script>
     $(document).ready(function () {
-        GetPaymentList();
+        getPaymentList();
     });
 
-    function GetPaymentList() {
+    function getPaymentList() {
         $.ajax({
             url: '/admin/prtPaymentReport',
             type: 'GET',

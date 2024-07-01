@@ -49,7 +49,7 @@
                             <textarea class="form-control" id="Vendor_Address" required></textarea>
                         </div>
                         <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="IsActive">
+                            <input type="checkbox" checked class="form-check-input" required id="IsActive">
                             <label class="form-check-label" for="IsActive">Is Active</label>
                         </div>
                         <button type="button" id="btn" class="btn btn-primary">Add Vendor</button>
@@ -67,14 +67,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function () {
-            GetVendorList();
-
+            getVendorList();
+           
             $('#btn').click(function () {
                 if (validateForm()) {
-                    var vendorName = $('#vendor_Name').val();
-                    var vendorEmail = $('#Vendor_Email').val();
-                    var vendorAddress = $('#Vendor_Address').val();
-                    var isActive = $('#IsActive').prop('checked') ? 1 : 0;
+                    var vendorName = $('#vendor_Name').val().trim();
+                    var vendorEmail = $('#Vendor_Email').val().trim();
+                    var vendorAddress = $('#Vendor_Address').val().trim();
+                    var isActive = $("#IsActive").prop("checked");
                     var WendorID = $("#IdForUpdateCategory").val();
 
                     var formData = {
@@ -84,7 +84,7 @@
                         IsActive: isActive,
                         Id: WendorID
                     };
-
+                    debugger;
                     $.ajax({
                         url: '/Admin/AddVendor',
                         type: 'POST',
@@ -93,7 +93,8 @@
                             var statusCode = res.status;
                             var message = res.message;
 
-                            if (statusCode == 1) {
+                            if (statusCode == 1) 
+                            {
                                 Swal.fire({
                                     icon: "success",
                                     title: message,
@@ -106,8 +107,9 @@
                                 });
                                 resetForm();
                                 $('#Modal .close').click();
-                                GetVendorList();
-                            } else if (statusCode == -1) {
+                                getVendorList();
+                            }
+                            if (statusCode == -1) {
                                 Swal.fire({
                                     icon: "error",
                                     title: message,
@@ -170,7 +172,7 @@
             $('#btn').text('Add Vendor');
             $('#ModalLabel').text('Add Vendor');
         }
-        function GetVendorList() {
+        function getVendorList() {
             $.ajax({
                 url: '/Admin/prtVendor',
                 type: 'GET',
@@ -183,7 +185,7 @@
             });
         }
 
-        function DeleteVendor(VendorID) {
+        function deleteVendornById(VendorID) {
             $.ajax({
                 url: '/Admin/DeleteVendor',
                 type: 'GET',
@@ -205,7 +207,7 @@
                         });
                         resetForm();
                         $('#Modal .close').click();
-                        GetVendorList();
+                        getVendorList();
                     } else if (statusCode == -1) {
                         Swal.fire({
                             icon: "error",
@@ -222,7 +224,7 @@
             });
         }
 
-        function GetVendorById(VendorID) {
+        function getVendorById(VendorID) {
             $.ajax({
                 url: '/Admin/GetVendorById',
                 type: 'GET',
@@ -241,33 +243,35 @@
 
         $("#Close").click(function () {
             resetForm();
+            $('#vendor_Name').removeClass('is-invalid');
+            $('#Vendor_Email').removeClass('is-invalid');
+            $('#Vendor_Address').removeClass('is-invalid');
         });
-        
-        function alphabetOnly() {
-            try {
-                var digitRegex = /[^a-zA-Z\s]+/g;
-                var x1 = document.getElementById("vendor_Name");
+        function alphabetOnly()
+        {
+            var x1 = document.getElementById("vendor_Name");
                 var x = x1.value;
+                x1.value = x.replace(/[^A-Za-z\s]+/g, '').replace(/\s+/g, ' ');
+                var isValid = /^[A-Za-z\s]+$/.test(x1.value);
+                var validationMessage = document.getElementById('validationMessage');
+        }
+        document.getElementById("vendor_Name").addEventListener("input", alphabetOnly);
 
-                x1.value = x.replace(digitRegex, '');
-
-                if (x.trim() === "") {
-                    return false;
-                } else {
-                    var a = /^[A-Za-z\s]+$/;
-                    if (a.test(x)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            } catch (error) {
-                console.log(error);
-            }
+        function alphabetOnly(event) {
+            var inputElement = event.target;
+            var value = inputElement.value;
+            inputElement.value = value.replace(/[^A-Za-z\s]+/g, '').replace(/\s+/g, ' ');
+            var isValid = /^[A-Za-z\s]+$/.test(inputElement.value);
+            // Assuming you want to do something with isValid, like validation
+            console.log(isValid); // Example: Log the validation result
         }
 
-        // Add event listener to validate input on change
-        document.getElementById("vendor_Name").addEventListener("input", alphabetOnly);
+        // Assuming you have input elements with id="vendor_Name"
+        var inputElements = document.querySelectorAll("#vendor_Name"); // Use querySelectorAll for ID selector
+        inputElements.forEach(function (inputElement) {
+            inputElement.addEventListener("input", alphabetOnly);
+        });
+
     </script>
 </body>
 </html>

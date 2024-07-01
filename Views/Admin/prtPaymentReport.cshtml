@@ -1,2 +1,90 @@
-﻿@model IEnumerable<ShopingCart.Models.PaymentReport><style>    table {        width: 100%;        border-collapse: collapse;        border: 2px solid black;    }    #tblorder th {        background-color: black;        text-align: center;        color: white;        font-weight: bold;    }    td, th {        padding: 10px;        text-align: center;        border: 1px solid #ddd;    }</style><table id="tblorder" class="table table-bordered">    <thead>        <tr>            <th>Payment Id</th>            <th>Order Id</th>            <th>Amount</th>            <th>Entry Date</th>        </tr>    </thead>    <tbody>        @foreach (var item in Model)
-        {            <tr>                <td>@item.PaymentId</td>                <td>@item.OrderId</td>                <td>@item.Amount</td>                <td>@item.EntryDate</td>            </tr>        }    </tbody></table>
+﻿@model IEnumerable<ShopingCart.Models.PaymentReport>
+
+<style>
+
+    #tblEmployee tr:nth-child(even) {
+        background-color: black;
+    }
+
+    #tblEmployee, th, td {
+        border: 1px solid white;
+    }
+
+        #tblEmployee tr:hover {
+            background-color: deeppink;
+        }
+
+    body {
+        background: black;
+    }
+
+    .a {
+        background: white;
+        height: 1030px;
+        width: 500px;
+        margin: 100px auto;
+        border-radius: 30px
+    }
+
+    input[type=text], input[type=number], input[type=date], input[type=email], select {
+        border: 2px solid black !important;
+    }
+
+    input[type=submit] {
+        color: white;
+    }
+
+    #table {
+        border: solid 2px;
+        border-top-color: black;
+        border-right-color: black;
+        border-bottom-color: black;
+        border-left-color: black;
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        background-color: #ddddee; /* Light grayish-blue background color */
+    }
+
+        #table th, #table td {
+            border: solid 1px black; /* Dark border for table cells */
+            padding: 10px; /* Increased padding inside cells */
+            text-align: left; /* Align text left within cells */
+        }
+
+        #table th {
+            background-color: black; /* Dark purple background color for headers */
+            color: white; /* White text color for headers */
+            font-weight: bold; /* Bold font for headers */
+        }
+
+        #table tbody tr:nth-child(even) {
+            background-color: #f0f0f0; /* Light gray alternate row color */
+        }
+</style>
+<table id="table" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Payment Id</th>
+            <th>Order Id</th>
+            <th>Amount</th>
+            <th>Entry Date</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.PaymentId</td>
+                <td>@item.OrderId</td>
+                <td>@item.Amount</td>
+                <td>@item.EntryDate</td>
+
+            </tr>
+        }
+    </tbody>
+
+
+</table>

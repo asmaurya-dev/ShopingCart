@@ -1,9 +1,42 @@
 ﻿@model IEnumerable<ShopingCart.Models.OrderMaster>
 <style>
-  
+
+
+    #tblEmployee tr:nth-child(even) {
+        background-color: black;
+    }
+
+    #tblEmployee, th, td {
+        border: 1px solid white;
+    }
+
+        #tblEmployee tr:hover {
+            background-color: deeppink;
+        }
+
+    body {
+        background: black;
+    }
+
+    .a {
+        background: white;
+        height: 1030px;
+        width: 500px;
+        margin: 100px auto;
+        border-radius: 30px
+    }
+
+    input[type=text], input[type=number], input[type=date], input[type=email], select {
+        border: 2px solid black !important;
+    }
+
+    input[type=submit] {
+        color: white;
+    }
+
     #table {
         border: solid 2px;
-        border-top-color:black;
+        border-top-color: black;
         border-right-color: black;
         border-bottom-color: black;
         border-left-color: black;
@@ -11,7 +44,7 @@
         border-collapse: collapse;
         font-family: Arial, sans-serif;
         font-size: 14px;
-        text-align: center;
+        background-color: #ddddee; /* Light grayish-blue background color */
     }
 
         #table th, #table td {
@@ -29,24 +62,6 @@
         #table tbody tr:nth-child(even) {
             background-color: #f0f0f0; /* Light gray alternate row color */
         }
-        tr{
-            font-weight:bold;
-            text-align:center;
-            
-        }
-
-   
-    td a:hover::after {
-        content: "click for show Order Item";
-        position: absolute;
-        background-color: #f0f0f0;
-        padding: 5px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 12px;
-        color: #333;
-    }
-
 
 </style>
 <table id="table">
