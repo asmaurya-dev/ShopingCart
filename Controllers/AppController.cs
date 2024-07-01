@@ -372,6 +372,126 @@ namespace ShopingCart.Controllers
             }
 
         }
+        [HttpGet]
+        public IActionResult getItemReport(int OrderId)
+        {
+            try
+            {
+                List<orderItem> itemreport = _hr.ItemReport(OrderId);
+                return Ok(itemreport);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error occured");
+            }
+        }
+        [HttpGet]
+        public IActionResult getPaymentReport()
+        {
+            try
+            {
+                List<PaymentReport> paymentreport = _hr.paymentReport();
+                return Ok(paymentreport);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error occured");
+            }
+        }
+        [HttpPost]
+        public IActionResult UploadCategoery( [FromForm]IFormFile? file)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest("No file uploaded.");
+                }
+
+                // Call MHR's UploadExcelData method to process the uploaded file
+                object result = _hr.UploadCategories(file);
+                // Return Ok with result (you can customize this response based on your needs)
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Return 500 status code and error message on exception
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult UploadProducts([FromForm] IFormFile? file)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest("No file uploaded.");
+                }
+
+                // Call MHR's UploadExcelData method to process the uploaded file
+                object result = _hr.UploadProducts(file);
+                // Return Ok with result (you can customize this response based on your needs)
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Return 500 status code and error message on exception
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+
+        #endregion
+        #region
+        [HttpPost]
+        public IActionResult AddVendor(Vendor vendor)
+        {
+           Response response =_hr.AddVendor(vendor);
+            return Ok(response);
+        }
+        [HttpGet]
+        public IActionResult vendorsList()
+        {
+            try
+            {
+                List<Vendor> vendors = _hr.vendorsList();
+                return Ok(vendors);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error occured");
+            }
+        }
+        [HttpDelete]
+        public IActionResult Deletevendors(int VendorID)
+        {
+            try
+            {
+                Response response= _hr.DeleteVendor(VendorID);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error occured");
+            }
+        }
+        [HttpGet]
+        public IActionResult vendorsListById(int VendorID)
+        {
+            try
+            {
+                var vendors = _hr.GetVendorListByID(VendorID);
+                return Ok(vendors);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error occured");
+            }
+        }
         #endregion
     }
 

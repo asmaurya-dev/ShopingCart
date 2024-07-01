@@ -411,7 +411,7 @@
                                     var productName = $(this).find('td:eq(0)').text();
                                     var price = $(this).find('td:eq(2)').text();
                                     var quantity = $(this).find('.quantityInput').val();
-                                var totalPrice = updateTotalPrice();
+                                var totalPrice = quantity*price;
 
                                     var newRowHtml = `<tr>`;
                                     newRowHtml += `<td>${productName}</td>`;

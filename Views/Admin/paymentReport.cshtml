@@ -1,0 +1,34 @@
+﻿
+@{
+    ViewData["Title"] = "paymentReport";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<div id="DivPrtPaymentList">
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+
+<script>
+    $(document).ready(function () {
+        GetPaymentList();
+    });
+
+    function GetPaymentList() {
+        $.ajax({
+            url: '/admin/prtPaymentReport',
+            type: 'GET',
+            success: function (response) {
+
+                $("#DivPrtPaymentList").html(response);
+            }
+        });
+    }
+
+</script>
+
+
+
+

@@ -1,0 +1,273 @@
+﻿@{
+    ViewData["Title"] = "Wendors";
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.2/dist/xlsx.full.min.js"></script>
+
+</head>
+<body>
+    <b>
+        <span>Wendor  List</span>
+
+        <button class="btn btn-info float-end m-1 p-1" data-toggle="modal" data-target="#Modal">Add New Wendor</button>
+
+    </b>
+    <div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title " id="ModalLabel">Add Vendor</h5>
+                    <button type="button" class="close" data-dismiss="modal" id="Close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data" id="productForm">
+                        <input type="hidden" id="IdForUpdateCategory" />
+
+                        <div class="form-group">
+                            <label for="vendor_Name">Vendor Name:</label>
+                            <input type="text" class="form-control" id="vendor_Name" required />
+                            <input type="hidden" id="hdnprodductid" name="Id" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Vendor_Email">Vendor Email:</label>
+                            <input type="email" class="form-control" id="Vendor_Email" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="Vendor_Address">Vendor Address:</label>
+                            <textarea class="form-control" id="Vendor_Address" required></textarea>
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="IsActive">
+                            <label class="form-check-label" for="IsActive">Is Active</label>
+                        </div>
+                        <button type="button" id="btn" class="btn btn-primary">Add Vendor</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="DivPrtCategoryList"></div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.16.0/standard/ckeditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            GetVendorList();
+
+            $('#btn').click(function () {
+                if (validateForm()) {
+                    var vendorName = $('#vendor_Name').val();
+                    var vendorEmail = $('#Vendor_Email').val();
+                    var vendorAddress = $('#Vendor_Address').val();
+                    var isActive = $('#IsActive').prop('checked') ? 1 : 0;
+                    var WendorID = $("#IdForUpdateCategory").val();
+
+                    var formData = {
+                        VendorName: vendorName,
+                        VendorEmail: vendorEmail,
+                        VendorAddress: vendorAddress,
+                        IsActive: isActive,
+                        Id: WendorID
+                    };
+
+                    $.ajax({
+                        url: '/Admin/AddVendor',
+                        type: 'POST',
+                        data: formData,
+                        success: function (res) {
+                            var statusCode = res.status;
+                            var message = res.message;
+
+                            if (statusCode == 1) {
+                                Swal.fire({
+                                    icon: "success",
+                                    title: message,
+                                    text: 'Thank you',
+                                    timer: 5000,
+                                    showConfirmButton: true,
+                                    showCloseButton: true,
+                                    showCancelButton: true,
+                                    timerProgressBar: true
+                                });
+                                resetForm();
+                                $('#Modal .close').click();
+                                GetVendorList();
+                            } else if (statusCode == -1) {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: message,
+                                    text: 'Sorry',
+                                    timer: 5000,
+                                    showConfirmButton: true,
+                                    showCloseButton: true,
+                                    showCancelButton: true,
+                                    timerProgressBar: true
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+
+            function validateForm() {
+                var valid = true;
+
+                if ($('#vendor_Name').val().trim() === '') {
+                    valid = false;
+                    $('#vendor_Name').addClass('is-invalid');
+                } else {
+                    $('#vendor_Name').removeClass('is-invalid');
+                }
+
+                if ($('#Vendor_Email').val().trim() === '') {
+                    valid = false;
+                    $('#Vendor_Email').addClass('is-invalid');
+                } else {
+                    $('#Vendor_Email').removeClass('is-invalid');
+                }
+
+                if ($('#Vendor_Address').val().trim() === '') {
+                    valid = false;
+                    $('#Vendor_Address').addClass('is-invalid');
+                } else {
+                    $('#Vendor_Address').removeClass('is-invalid');
+                }
+
+                return valid;
+            }
+
+            function resetForm() {
+                $("#IdForUpdateCategory").val('');
+                $("#vendor_Name").val('');
+                $("#Vendor_Email").val('');
+                $("#Vendor_Address").val('');
+                $("#IsActive").prop('checked', false);
+                $('#btn').text('Add Vendor');
+                $('#ModalLabel').text('Add Vendor');
+            }   
+        });
+        function resetForm() {
+            $("#IdForUpdateCategory").val('');
+            $("#vendor_Name").val('');
+            $("#Vendor_Email").val('');
+            $("#Vendor_Address").val('');
+            $("#IsActive").prop('checked', false);
+            $('#btn').text('Add Vendor');
+            $('#ModalLabel').text('Add Vendor');
+        }
+        function GetVendorList() {
+            $.ajax({
+                url: '/Admin/prtVendor',
+                type: 'GET',
+                success: function (response) {
+                    $("#DivPrtCategoryList").html(response);
+                },
+                error: function () {
+                    // Handle error if needed
+                }
+            });
+        }
+
+        function DeleteVendor(VendorID) {
+            $.ajax({
+                url: '/Admin/DeleteVendor',
+                type: 'GET',
+                data: { VendorID: VendorID },
+                success: function (res) {
+                    var statusCode = res.status;
+                    var message = res.message;
+
+                    if (statusCode == 1) {
+                        Swal.fire({
+                            icon: "success",
+                            title: message,
+                            text: 'Thank you',
+                            timer: 5000,
+                            showConfirmButton: true,
+                            showCloseButton: true,
+                            showCancelButton: true,
+                            timerProgressBar: true
+                        });
+                        resetForm();
+                        $('#Modal .close').click();
+                        GetVendorList();
+                    } else if (statusCode == -1) {
+                        Swal.fire({
+                            icon: "error",
+                            title: message,
+                            text: 'Sorry',
+                            timer: 5000,
+                            showConfirmButton: true,
+                            showCloseButton: true,
+                            showCancelButton: true,
+                            timerProgressBar: true
+                        });
+                    }
+                }
+            });
+        }
+
+        function GetVendorById(VendorID) {
+            $.ajax({
+                url: '/Admin/GetVendorById',
+                type: 'GET',
+                data: { VendorID: VendorID },
+                success: function (res) {
+                    $("#IdForUpdateCategory").val(res[0].id);
+                    $("#vendor_Name").val(res[0].vendorName);
+                    $("#Vendor_Email").val(res[0].vendorEmail);
+                    $("#Vendor_Address").val(res[0].vendorAddress);
+                    $("#IsActive").prop("checked", res[0].isActive);
+                    $('#btn').text('Update');
+                    $('#ModalLabel').text('Update Vendor');
+                }
+            });
+        }
+
+        $("#Close").click(function () {
+            resetForm();
+        });
+        
+        function alphabetOnly() {
+            try {
+                var digitRegex = /[^a-zA-Z\s]+/g;
+                var x1 = document.getElementById("vendor_Name");
+                var x = x1.value;
+
+                x1.value = x.replace(digitRegex, '');
+
+                if (x.trim() === "") {
+                    return false;
+                } else {
+                    var a = /^[A-Za-z\s]+$/;
+                    if (a.test(x)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        // Add event listener to validate input on change
+        document.getElementById("vendor_Name").addEventListener("input", alphabetOnly);
+    </script>
+</body>
+</html>

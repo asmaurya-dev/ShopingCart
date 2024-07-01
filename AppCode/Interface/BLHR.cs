@@ -5,6 +5,10 @@ using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Drawing;
 using ShopingCart.Models;
+using OfficeOpenXml;
+using Microsoft.CodeAnalysis.Elfie.Model;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace RP_task.AppCode.BusinessLayer
 {
@@ -15,7 +19,7 @@ namespace RP_task.AppCode.BusinessLayer
         public IConfiguration Configuration { get; }
         public BLHR(IConfiguration configuration)
         {
-            Configuration=configuration;
+            Configuration = configuration;
             _connection = new SqlConnection(GetConnectionString());
         }
         private string GetConnectionString()
@@ -24,7 +28,7 @@ namespace RP_task.AppCode.BusinessLayer
         }
         public int ExecuteDML(string procname, SqlParameter[] parameters)
         {
-            using (SqlCommand command = new SqlCommand(procname,_connection))
+            using (SqlCommand command = new SqlCommand(procname, _connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
 
@@ -99,8 +103,8 @@ namespace RP_task.AppCode.BusinessLayer
                 object result = command.ExecuteNonQuery();
                 _connection.Close();
                 return result;
-            } 
-         }
+            }
+        }
         public object ExecuteScalarwithparamete(string procname, SqlParameter[] parameters)
         {
             using (SqlCommand command = new SqlCommand(procname, _connection))
@@ -233,7 +237,7 @@ namespace RP_task.AppCode.BusinessLayer
             {
                 cmd.CommandType = CommandType.StoredProcedure;
 
-               
+
                 _connection.Open();
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -246,16 +250,16 @@ namespace RP_task.AppCode.BusinessLayer
                         // Retrieve status code and message columns
                         int statusCodeIndex = reader.GetOrdinal("StatusCode");
                         int messageIndex = reader.GetOrdinal("Message");
-                       
+
                         // Retrieve values
                         int statusCode = reader.GetInt32(statusCodeIndex);
                         string message = reader.GetString(messageIndex);
-                       
+
 
                         // Set the values in the response object
                         response.Status = statusCode;
                         response.Message = message;
-                      
+
                     }
                 }
 
@@ -264,5 +268,11 @@ namespace RP_task.AppCode.BusinessLayer
 
             return response;
         }
+      
+    
+      
+
     }
 }
+
+

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ShopingCart.Models.User>
+﻿@model IEnumerable<ShopingCart.Models.orderItem>
 <style>
     .switch {
         position: relative;
@@ -30,7 +30,6 @@
             content: "";
             height: 26px;
             width: 26px;
-
             left: 4px;
             bottom: 4px;
             background-color: white;
@@ -41,7 +40,7 @@
 
     input:checked + .slider {
         background-color: #2196F3;
-        border-radius:30px
+        border-radius: 30px
     }
 
     input:focus + .slider {
@@ -63,7 +62,7 @@
     }
 
         #tblEmployee tr:hover {
-            background-color: deeppink;
+            background-color: black;
         }
 
     body {
@@ -75,7 +74,7 @@
         height: 1030px;
         width: 500px;
         margin: 100px auto;
-        border-radius:30px
+        border-radius: 30px
     }
 
     input[type=text], input[type=number], input[type=date], input[type=email], select {
@@ -118,44 +117,35 @@
 <table id="table">
     <thead>
         <tr>
-            <th>User Id</th>
-            <th>User name</th>
-            <th>Email</th>
-            <th>Password</th>
-            <th>Phone No</th>
-    
-            <th>Address</th>
-            <th>Entry Date</th>
-            <th>Active Status </th>
+            <th>Order Item Id</th>
+            <th>Product name</th>
+            <th>Product Price</th> 
+            <th>Product Quantity</th> 
+            <th>Entery Date</th>
+           
+
+         
         </tr>
     </thead>
     <tbody>
-        
-            @foreach(var item in Model)
+
+        @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Id</td>
-                <td>@item.Name</td>
-                <td>@item.Email</td>
-                <td>@item.Password</td>
-                <td>@item.Phone</td>
+                <td>@item.OrderaItemId</td>
+                <td>@item.ProductName</td>
+                <td>@item.ProductPrice</td>
+                <td>@item.Quantity</td>
+              
                
-                <td>@item.Address</td>
+                
                 <td>@item.EntryDate</td>
+             
 
-               @*  <label class="switch">
-                    <input type="checkbox" style="   border-radius:30px" id="checkbox_" @(item.IsActive == true ? "checked" : "") onclick="if(confirm('Are u sure want to change the status'))modifystatus(@item.Id)">
-                    <span class="slider" style="   border-radius:30px"></span>
-                </label> *@
-                <td>
-                    <label class="switch">
-                        <input type="checkbox" style="   border-radius:30px" id="checkbox_" @(item.IsActive == true ? "checked" : "")
-                               onclick="if(confirm('Are u sure want to change the status'))modifystatus(@item.Id)">
-                        <span class="slider" style="   border-radius:30px"></span>
-                    </label>
-                </td>
+
+              
             </tr>
-            }
-     
+        }
+
     </tbody>
 </table>

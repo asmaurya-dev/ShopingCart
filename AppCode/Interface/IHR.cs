@@ -29,6 +29,15 @@ namespace RP_task.AppCode.Interface
         public object AddtblCart(Cartlist cart);
         public Response FinalOrder();
         public IEnumerable<OrderMaster> OrderMastersListForOrderReport(OrderMaster order);
+        public List<orderItem> ItemReport(int OrderId);
+        public List<PaymentReport> paymentReport();
+        public object UploadCategories(IFormFile file);
+        public object UploadProducts(IFormFile file);
+        public Response AddVendor(Vendor vendor);
+        public List<Vendor> vendorsList();
+        public Response DeleteVendor(int VendorID);
+        public IEnumerable<Vendor> GetVendorListByID(int VendorID);
+       
     }
 
 }

@@ -11,15 +11,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.2/dist/xlsx.full.min.js"></script>
+    <style>
+
+        input[type="file"] {
+            color: transparent;
+        }
+    </style>
 </head>
 <body>
-
+    <b>
+    <span>Product List</span>
    
-
-    <button class="btn btn-info float-end" data-toggle="modal" data-target="#Modal">Add New Product</button>
-    <h3 >Add Product</h3>
-
+    <button for="execlupload"  id="Upload" class="btn btn-danger float-end mt-1 p-1">
+        <i class="fas fa-file-upload"> </i> Upload
+    </button>
+   <input type="file" class="float-end bg-primary   p-1 " style="width:100px" id="file" name="file" required>
+    <button class="btn btn-info float-end m-1 p-1" data-toggle="modal" data-target="#Modal">Add New Product</button>
+    <button class="btn btn-success float-end m-1 p-1" id="download" @* onclick="downloadExcel()" *@>Download excel formate</button>
+   
+    </b>
     <div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -81,6 +93,21 @@
             SelectProduct();
 
         });
+        $("#Upload").click(function () {
+          
+                uploadFile()
+
+               
+        })
+        $(function () {
+            $('input[type="file"]').change(function () {
+                if ($(this).val() != "") {
+                    $(this).css('display', 'block');
+                } else {
+                    $(this).css('color', 'transparent');
+                }
+            });
+        })
         document.getElementById('product_Image').onchange = evt => {
             const [file] = document.getElementById('product_Image').files;
             if (file) {
@@ -122,7 +149,47 @@
                 }
             })
         }
+        $("#download").click(function(){
+            var result = confirm("Are u sure want to download ");
+            if (result) {
+                downloadExcel()
+            }
+        })
+        function downloadExcel() {
+            // Example data
+            var data = [
+                ["CategoeryId","ProductName","ProductPrice","ProductDiscription", "IsActive"],
 
+            ];
+
+            // Create a new workbook
+            var workbook = XLSX.utils.book_new();
+            var sheet = XLSX.utils.aoa_to_sheet(data);
+
+            // Add the worksheet to the workbook
+            XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
+
+            // Generate an XLSX file as a Blob object
+            var wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+
+            // Create a Blob object from array buffer
+            var blob = new Blob([wbout], { type: "application/octet-stream" });
+
+            // Create a download link element
+            var downloadLink = document.createElement("a");
+            var url = URL.createObjectURL(blob);
+
+            downloadLink.href = url;
+            downloadLink.download = "productexcel.xlsx"; // File name
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+
+            // Cleanup
+            setTimeout(function () {
+                document.body.removeChild(downloadLink);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
         document.getElementById("product_price").addEventListener("keypress", function (event) {
             var price = document.getElementById("product_price").value;
             var charCode = event.which ? event.which : event.keyCode;
@@ -135,6 +202,33 @@
                 event.preventDefault();
             }
         });
+        function uploadFile() {
+            var formData = new FormData();
+            var file = $('#file')[0].files[0];
+
+            formData.append('file', file);
+
+            $.ajax({
+                type: "POST",
+                url: "/admin/ProductUpload",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    debugger;
+                    alert('File uploaded successfully')
+                   SelectProduct();
+                   $("file").val('');
+
+                },
+                error: function (errResponse) {
+                    // Handle error response here
+                    console.error('Error uploading file:', errResponse);
+                }
+            });
+        }
+
+
     </script>
 
 </body>

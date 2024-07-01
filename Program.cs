@@ -1,6 +1,12 @@
 using RP_task.AppCode.Interface;
 using RP_task.AppCode.MiddleLayer;
 using ShopingCart.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using OfficeOpenXml;
 
 namespace ShopingCart
 {
@@ -12,6 +18,7 @@ namespace ShopingCart
             {
                 services.AddTransient<IHR, MHR>();
                 services.AddScoped<EmailService>();
+
             }
 
         }
@@ -23,12 +30,12 @@ namespace ShopingCart
             builder.Services.AddMvc();
             builder.Services.AddScoped<IHR, MHR>();
             builder.Services.AddSession();
-
+            builder.Services.AddScoped<ExcelService>();
             var app = builder.Build();
             // Add services to the container.
-            
-      
 
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {

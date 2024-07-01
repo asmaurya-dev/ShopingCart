@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using OfficeOpenXml;
 using RP_task.AppCode.Interface;
 using RP_task.AppCode.MiddleLayer;
 using ShopingCart.Models;
@@ -21,11 +22,13 @@ namespace ShopingCart.Controllers
         public static string apiBaseUrl = "http://localhost:5152/";
         public static string apiBaseUrl1 = "https://localhost:7099/";
         private readonly IHostingEnvironment hostingEnvironment;
-        public AdminController(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        private readonly ExcelService _excelService;
+        public AdminController(IConfiguration configuration, IHostingEnvironment hostingEnvironment, ExcelService excelService)
 
         {
             _hr = new MHR(configuration);
             this.hostingEnvironment = hostingEnvironment;
+            _excelService = excelService;
         }
 
 
@@ -351,5 +354,172 @@ namespace ShopingCart.Controllers
             }
             return View();
         }
+        public IActionResult OrderItemReport(int OrderId)
+        {
+            string apiUrl = apiBaseUrl + "api/App/getItemReport?OrderId="+ OrderId;
+            try
+            {
+                // ExecuteHttpRequest is now synchronous
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Get, apiUrl, OrderId);
+                List<orderItem> Users = JsonConvert.DeserializeObject<List<orderItem>>(response);
+
+                return PartialView(Users);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+                return Json(new { error = "An error occurred while processing your request." });
+            }
+            return View();
+        }
+        public IActionResult paymentReport()
+        {
+            return View();
+        }
+        public IActionResult prtPaymentReport()
+        {
+            try
+            {
+                string apiUrl = apiBaseUrl + "api/App/getPaymentReport";
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Get, apiUrl);
+                List<PaymentReport> paymentlist = JsonConvert.DeserializeObject<List<PaymentReport>>(response);
+
+                return PartialView(paymentlist);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("An error occurred while fetching product categories.");
+            }
+            
+
+        }
+        public IActionResult Upload(IFormFile file)
+        {
+            string apiUrl = apiBaseUrl + "api/App/UploadCategoery";
+            try
+            {
+                var formData = new MultipartFormDataContent();
+
+                if (file != null)
+                {
+                    formData.Add(new StreamContent(file.OpenReadStream()), "file", file.FileName);
+                }
+
+                var jsonResponse = ApiService.ExecuteHttpRequestss(HttpMethod.Post, apiUrl, formData: formData);
+
+                return Json(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+                return StatusCode(500, new { error = "An error occurred while processing your request." });
+            }
+        }
+
+        public IActionResult ProductUpload(IFormFile file)
+        {
+            string apiUrl = apiBaseUrl + "api/App/UploadProducts";
+            try
+            {
+                var formData = new MultipartFormDataContent();
+
+                if (file != null)
+                {
+                    formData.Add(new StreamContent(file.OpenReadStream()), "file", file.FileName);
+                }
+
+                var jsonResponse = ApiService.ExecuteHttpRequestss(HttpMethod.Post, apiUrl, formData: formData);
+
+                return Json(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred: " + ex.Message);
+                return StatusCode(500, new { error = "An error occurred while processing your request." });
+            } // Redirect to appropriate action after successful upload
+        }
+        public IActionResult Wendors()
+        {
+            return View();
+        }
+        public IActionResult AddVendor( Vendor vendor)
+        {
+            try
+            {
+                string apiUrl = apiBaseUrl + "api/App/AddVendor";
+
+                try
+                {
+                    string response = ApiService.ExecuteHttpRequest(HttpMethod.Post, apiUrl, vendor);
+                    Response jsonResponse = JsonConvert.DeserializeObject<Response>(response);
+                    return Json(jsonResponse);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An error occurred: " + ex.Message);
+                    return Json(new { error = "An error occurred while processing your request." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("An error occurred while fetching product categories.");
+            }
+        }
+
+      public IActionResult  prtVendor()
+        {
+            try
+            {
+                string apiUrl = apiBaseUrl + "api/App/vendorsList";
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Get, apiUrl);
+                List<Vendor> paymentlist = JsonConvert.DeserializeObject<List<Vendor>>(response);
+
+                return PartialView(paymentlist);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("An error occurred while fetching product categories.");
+            }
+
+        }
+        public IActionResult DeleteVendor(int VendorID)
+        {
+            try
+            {
+                string apiUrl = apiBaseUrl + "api/App/Deletevendors?VendorID="+ VendorID;
+
+                string response = ApiService.ExecuteHttpRequest(HttpMethod.Delete, apiUrl, VendorID);
+                Response jsonResponse = JsonConvert.DeserializeObject<Response>(response);
+                return Json(jsonResponse);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("An error occurred while fetching product categories.");
+            }
+
+        }
+
+        public IActionResult GetVendorById( int VendorID)
+        {   
+            try
+            {
+
+                string apiUrl = apiBaseUrl + "api/App/vendorsListById?VendorID=" + VendorID;
+             string response = ApiService.ExecuteHttpRequest(HttpMethod.Get, apiUrl);
+                List<Vendor> vendors = JsonConvert.DeserializeObject<List<Vendor>>(response);
+
+
+               
+                return Json(vendors);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("An error occurred while fetching product categories.");
+            }
+
+        }
     }
 }
+
+

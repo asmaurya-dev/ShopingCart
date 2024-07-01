@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ShopingCart.Models.OrderMaster>
+﻿@model IEnumerable<ShopingCart.Models.Vendor>
 <style>
   
     #table {
@@ -53,47 +53,38 @@
 
     <thead>
         <tr>
-            <th>User Id</th>
-            <th>User Name</th>
-            <th>Total Amount</th>
+            <th>Vendor Id</th>
+            <th>Vendor Name</th>
+            <th>Vendor Email</th>
+            <th>Vendor Address</th>
             <th>Entry Date</th>
-            <th>Order ID</th>
+            <th>Modify Date</th>
+            <th>Status</th>
+            <th>Action</th>
+            
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.UserId</td>
-                <td>@item.UserNAme</td>
-                <td>@(item.TotalAmount)</td>
-                <td>@item.EnteryDate</td>
-                <td><a id="a" href="#" style="text-decoration:underline" data-toggle="modal" data-target="#myModal">@item.OrderId</a></td>
+                <td>@item.Id</td>
+                <td>@item.VendorName</td>
+                <td>@item.VendorEmail</td>
+                <td>@(item.VendorAddress)</td>
+                <td>@item.EntryDate</td>
+                <td>@item.ModifyDate</td>
+                <td>@(item.IsActive ? "Active" : "Inactive")</td>
+
+               
+                <td>
+                    <button class='btn btn-success' onclick='GetVendorById(@item.Id)' data-toggle="modal" data-target="#Modal">Edit</button>
+                    <button class='btn btn-danger delete-btn' data-id="" onclick="if(confirm('Are you sure you want to delete?')) { DeleteVendor(@item.Id) }">Delete</button>
+                </td>
             </tr>
         }
 
     </tbody>
 </table>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script>
 
-    $(document).on('click', '#searchResults table tbody tr td:last-child', function () {
-
-        var cellValue = $(this).text().trim();
-        $.ajax({
-            url: '/Admin/OrderItemReport',
-            type: 'GET',
-            data: {
-                OrderId: cellValue
-            },
-            success: function (response) {
-                debugger;
-                $("#itemreport").html(response)
-
-
-
-            },
-        });
-    });
-</script>
 
